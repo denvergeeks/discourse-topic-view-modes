@@ -1,4 +1,4 @@
 plugins:
-  published_pages_cooked_enabled:
+  topic_content_view_enabled:
     default: true
     client: true
