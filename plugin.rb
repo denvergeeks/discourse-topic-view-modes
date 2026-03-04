@@ -1,6 +1,6 @@
 # name: discourse-topic-content-view
 # about: Display topic cooked content at /topic-content/:id with full theme JS
-# version: 0.4.0
+# version: 0.5.0
 # authors: @denvergeeks
 # url: https://github.com/denvergeeks/discourse-topic-content-view
 
@@ -34,98 +34,64 @@ after_initialize do
         publish_file ? "/assets/#{File.basename(publish_file)}" : nil
       end
 
-      # Build stylesheet link tags the same way published pages do
-      css_tags = ""
-      begin
-        manager = Stylesheet::Manager.new(theme_id: theme_id)
+      # Collect theme CSS stylesheet URLs
+      theme_ids = []
+      if current_user
+        theme_ids = current_user.user_option&.theme_ids || []
+      end
+      theme_ids = [SiteSetting.default_theme_id] if theme_ids.empty?
+      theme_id = theme_ids.first
 
-        manager.stylesheet_details(:color_definitions, 'all').each do |s|
-          css_tags += "  <link href=\"#{s[:new_href]}\" media=\"all\" rel=\"stylesheet\">\n"
-        end rescue nil
-
-        manager.stylesheet_details(:publish, 'all').each do |s|
-          css_tags += "  <link href=\"#{s[:new_href]}\" media=\"all\" rel=\"stylesheet\">\n"
-        end rescue nil
-
-        manager.stylesheet_details(:common_theme, 'all').each do |s|
-          css_tags += "  <link href=\"#{s[:new_href]}\" media=\"all\" rel=\"stylesheet\" data-theme-id=\"#{s[:theme_id]}\">\n"
-        end rescue nil
-
-        manager.stylesheet_details(:desktop_theme, 'all').each do |s|
-          css_tags += "  <link href=\"#{s[:new_href]}\" media=\"all\" rel=\"stylesheet\" data-theme-id=\"#{s[:theme_id]}\">\n"
-        end rescue nil
-
-        Discourse.find_plugin_css_assets(
-          include_disabled: false,
-          mobile_view: false,
-          desktop_view: true
-        ).each do |asset|
-          css_tags += "  <link href=\"/stylesheets/#{asset}.css\" media=\"all\" rel=\"stylesheet\">\n"
-        end rescue nil
-      rescue => e
-        Rails.logger.error "TopicContentView CSS error: #{e.message}"
+      css_links = []
+      if theme_id && theme_id > 0
+        theme = Theme.find_by(id: theme_id)
+        if theme
+          target = :desktop
+          [
+            Stylesheet::Manager.new(theme_ids: [theme_id]).stylesheet_data(:desktop_theme),
+            Stylesheet::Manager.new(theme_ids: [theme_id]).stylesheet_data(:common_theme),
+            Stylesheet::Manager.new(theme_ids: []).stylesheet_data(:desktop),
+          ].flatten.each do |s|
+            css_links << s[:new_href] if s[:new_href].present?
+          end
+        end
       end
 
-      # Build JS tag using the resolved hashed path
-      js_tag = publish_js_path ?
-        "  <script defer src=\"#{publish_js_path}\" data-discourse-entrypoint=\"publish\" nonce=\"#{nonce}\"></script>\n" : ""
+      # Also include the base Discourse desktop stylesheet
+      base_css = begin
+        ActionController::Base.helpers.asset_path('desktop.css')
+      rescue
+        nil
+      end
+      css_links.unshift(base_css) if base_css
 
-      html = <<~HTML
+      topic_id = topic.id
+      slug     = topic.slug
+
+      html_content = <<~HTML
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
-          <meta charset="utf-8">
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <title>#{title} - #{site_title}</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
-        #{css_tags}
-          <style>
-            body {
-              max-width: 900px;
-              margin: 0 auto;
-              padding: 2em 2em 4em;
-              font-family: var(--font-family);
-              background: var(--secondary);
-              color: var(--primary);
-            }
-            .topic-content-title {
-              font-size: 1.7em;
-              font-weight: bold;
-              margin-bottom: 1em;
-              padding-bottom: 0.5em;
-              border-bottom: 1px solid var(--primary-low);
-            }
-            .cooked img { max-width: 100%; height: auto; }
-            .cooked pre {
-              background: var(--primary-very-low);
-              padding: 1em;
-              border-radius: 4px;
-              overflow-x: auto;
-            }
-            .cooked code {
-              background: var(--primary-very-low);
-              padding: 0.15em 0.4em;
-              border-radius: 3px;
-            }
-            .cooked blockquote {
-              border-left: 4px solid var(--primary-low-mid);
-              padding-left: 1em;
-              margin-left: 0;
-            }
-          </style>
+          #{css_links.map { |href| "<link rel=\"stylesheet\" href=\"#{ERB::Util.html_escape(href)}\" />" }.join("\n  ")}
         </head>
-        <body class="topic-content-view">
-          <div class="topic-content-container">
-            <h1 class="topic-content-title">#{title}</h1>
-            <div class="topic-content-body cooked">
-              #{cooked}
+        <body class="published-page">
+          <div id="main" class="published-page-content">
+            <div id="ember-main-application" data-topic-id="#{topic_id}" data-slug="#{ERB::Util.html_escape(slug)}">
+              <div class="published-page-content">
+                <h1 class="published-page-title">#{title}</h1>
+                <div class="cooked">#{cooked}</div>
+              </div>
             </div>
           </div>
-        #{js_tag}
+          #{publish_js_path ? "<script nonce=\"#{nonce}\" src=\"#{publish_js_path}\"></script>" : ''}
         </body>
         </html>
       HTML
 
-      render html: html.html_safe
+      render html: html_content.html_safe
     end
 
     private
@@ -139,7 +105,7 @@ after_initialize do
     end
   end
 
-  Discourse::Application.routes.append do
-    get '/topic-content/:id' => 'topic_content_view#show', constraints: { id: /[^\/]+/ }
+  Discourse::Application.routes.prepend do
+    get '/topic-content/:id' => 'topic_content_view#show', constraints: { id: /[^.]+/ }
   end
 end
