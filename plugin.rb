@@ -1,6 +1,6 @@
 # name: discourse-topic-content-view
-# about: Display topic cooked content at /topic-content/:id with full theme JS
-# version: 0.6.0
+# about: Display topic cooked content at /topic-content/:id with full theme CSS and inline JS
+# version: 0.7.0
 # authors: @denvergeeks
 # url: https://github.com/denvergeeks/discourse-topic-content-view
 
@@ -12,6 +12,9 @@ after_initialize do
     skip_before_action :check_xhr, :preload_json, :verify_authenticity_token
     layout false
 
+    # Inline JS: replicate theme component decorator behaviours without publish.js
+    # (publish.js crashes with "Cannot read properties of undefined (reading 'clearState')"
+    #  because it tries to run the full Discourse app lifecycle in a stripped context)
     INIT_SCRIPT = <<~'JS'
       document.addEventListener('DOMContentLoaded', function() {
         var cooked = document.querySelector('.cooked');
@@ -45,23 +48,24 @@ after_initialize do
           });
         });
 
-        // ── Lazy YouTube embeds ─────────────────────────────────────────
+        // ── Lazy YouTube / Vimeo embeds ─────────────────────────────────────
         cooked.querySelectorAll('.lazy-video-container').forEach(function(c) {
-          var id = c.getAttribute('data-video-idx') || c.getAttribute('data-video-id');
-          var provider = c.getAttribute('data-provider-name') || 'youtube';
-          if (!id) return;
+          var videoId = c.getAttribute('data-video-idx') || c.getAttribute('data-video-id');
+          var provider = (c.getAttribute('data-provider-name') || 'youtube').toLowerCase();
+          if (!videoId) return;
           c.style.cursor = 'pointer';
           c.addEventListener('click', function() {
             var iframe = document.createElement('iframe');
-            iframe.width = '560'; iframe.height = '315';
-            iframe.allow = 'autoplay; encrypted-media';
+            iframe.style.cssText = 'width:100%;aspect-ratio:16/9;border:none;display:block';
+            iframe.allow = 'autoplay; encrypted-media; fullscreen';
             iframe.allowFullscreen = true;
             if (provider === 'youtube') {
-              iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1';
+              iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
             } else if (provider === 'vimeo') {
-              iframe.src = 'https://player.vimeo.com/video/' + id + '?autoplay=1';
+              iframe.src = 'https://player.vimeo.com/video/' + videoId + '?autoplay=1';
+            } else {
+              return;
             }
-            iframe.style.cssText = 'width:100%;aspect-ratio:16/9;border:none';
             c.innerHTML = '';
             c.appendChild(iframe);
           });
@@ -69,33 +73,40 @@ after_initialize do
 
         // ── Scrollable content (data-theme-scrollable) ──────────────────
         cooked.querySelectorAll('[data-theme-scrollable]').forEach(function(el) {
-          el.style.cssText = (el.getAttribute('style') || '') + ';overflow-y:auto;max-height:400px;border:1px solid #ccc;padding:1em;border-radius:4px';
+          el.style.overflowY = 'auto';
+          el.style.maxHeight = '400px';
+          if (!el.style.border) el.style.border = '1px solid var(--primary-low, #ccc)';
+          el.style.padding = '1em';
+          el.style.borderRadius = '4px';
         });
 
         // ── Masonry gallery (data-masonry-gallery) ──────────────────────
         cooked.querySelectorAll('[data-masonry-gallery]').forEach(function(gallery) {
-          gallery.style.cssText = 'columns:3 200px;column-gap:8px';
+          gallery.style.columns = '3 200px';
+          gallery.style.columnGap = '8px';
           gallery.querySelectorAll('p').forEach(function(p) {
-            p.style.cssText = 'break-inside:avoid;margin-bottom:8px';
+            p.style.breakInside = 'avoid';
+            p.style.marginBottom = '8px';
           });
         });
 
         // ── Footnote popovers ───────────────────────────────────────────
         cooked.querySelectorAll('a.footnote-ref').forEach(function(ref) {
-          var targetId = ref.getAttribute('href').replace('#', '');
+          var href = ref.getAttribute('href') || '';
+          var targetId = href.replace(/^.*#/, '');
+          ref.style.position = 'relative';
           ref.addEventListener('mouseenter', function() {
             var fnEl = document.getElementById(targetId);
             if (!fnEl) return;
             var pop = document.createElement('div');
-            pop.id = 'fn-pop-' + targetId;
-            pop.style.cssText = 'position:absolute;z-index:9999;background:#fff;border:1px solid #ccc;border-radius:4px;padding:8px 12px;max-width:320px;font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.15)';
-            pop.innerHTML = fnEl.innerHTML.replace(/<a[^>]*footnote-backref[^>]*>.*?<\/a>/g, '');
-            ref.style.position = 'relative';
+            pop.className = 'fn-popover';
+            pop.style.cssText = 'position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);z-index:9999;background:#fff;border:1px solid var(--primary-low,#ccc);border-radius:4px;padding:8px 12px;max-width:320px;font-size:13px;box-shadow:0 2px 12px rgba(0,0,0,.15);white-space:normal;pointer-events:none';
+            pop.innerHTML = fnEl.innerHTML.replace(/<a[^>]*footnote-backref[^>]*>.*?<\/a>/gi, '');
             ref.appendChild(pop);
           });
           ref.addEventListener('mouseleave', function() {
-            var pop = document.getElementById('fn-pop-' + ref.getAttribute('href').replace('#', ''));
-            if (pop) pop.parentNode.removeChild(pop);
+            var pop = ref.querySelector('.fn-popover');
+            if (pop) ref.removeChild(pop);
           });
         });
       });
@@ -113,14 +124,6 @@ after_initialize do
       site_title = ERB::Util.html_escape(SiteSetting.title)
       cooked     = post.cooked
       nonce      = SecureRandom.hex(16)
-
-      # Resolve publish.js hashed asset path
-      publish_js_path = begin
-        ActionController::Base.helpers.asset_path('publish.js')
-      rescue
-        publish_file = Dir.glob(Rails.root.join('public', 'assets', 'publish-*.js')).first
-        publish_file ? "/assets/#{File.basename(publish_file)}" : nil
-      end
 
       # Collect theme CSS
       theme_ids = current_user ? (current_user.user_option&.theme_ids || []) : []
@@ -165,7 +168,6 @@ after_initialize do
               </div>
             </div>
           </div>
-          #{publish_js_path ? "<script nonce=\"#{nonce}\" src=\"#{publish_js_path}\"></script>" : ''}
           <script nonce="#{nonce}">#{INIT_SCRIPT}</script>
         </body>
         </html>
