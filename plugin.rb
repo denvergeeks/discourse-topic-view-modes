@@ -160,6 +160,7 @@ after_initialize do
   end
 
   Discourse::Application.routes.prepend do
+    get '/t/:slug/:id/content' => 'topic_content_view#show', constraints: { id: /\d+/, slug: /[^\/]+/ }
     get '/t/:id/content' => 'topic_content_view#show', constraints: { id: /[^.]+/ }
   end
 end
