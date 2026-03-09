@@ -1,6 +1,4 @@
-<div class="topic-content-container">
+<article class="topic-content-container">
   <h1 class="topic-content-title"><%= ERB::Util.html_escape(@topic.title) %></h1>
-  <div class="topic-content-body cooked">
-    <%= raw @post.cooked %>
-  </div>
-</div>
+  <div class="cooked"><%= raw @post.cooked %></div>
+</article>
