@@ -9,7 +9,7 @@ enabled_site_setting :topic_content_view_enabled
 register_asset "stylesheets/topic-content-view.scss", :desktop
 
 after_initialize do
-  # JSON API — called by the Ember route's model() hook
+  # JSON API — called by the Ember route's model() hook via ajax("/tc/:id.json")
   class ::TopicContentViewController < ::ApplicationController
     requires_plugin 'discourse-topic-content-view'
     skip_before_action :verify_authenticity_token
@@ -47,9 +47,10 @@ after_initialize do
   end
 
   Discourse::Application.routes.prepend do
-    # JSON API endpoint — called by Ember ajax() with .json suffix
+    # JSON API — only responds to .json requests (Ember ajax adds the suffix)
     get '/tc/:id' => 'topic_content_view#show',
-        constraints: { id: /\d+/ },
-        format: 'json'
+        constraints: { id: /\d+/, format: /json/ },
+        format: false,
+        defaults: { format: :json }
   end
 end
