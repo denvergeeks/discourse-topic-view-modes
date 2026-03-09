@@ -146,7 +146,7 @@ after_initialize do
 
       @nonce      = SecureRandom.hex(16)
       @init_script = TOPIC_CONTENT_VIEW_INIT_SCRIPT
-      render :show, formats: [:html]
+      render 'discourse_topic_content_view/topic_content/show', formats: [:html]
     end
 
     private
