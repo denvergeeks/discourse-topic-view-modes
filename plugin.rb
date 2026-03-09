@@ -113,7 +113,6 @@ after_initialize do
     layout 'topic_content'
 
     def show
-      request.format = :html
       @topic = find_topic(params[:id])
       raise Discourse::NotFound unless @topic
       guardian.ensure_can_see!(@topic)
@@ -147,6 +146,7 @@ after_initialize do
 
       @nonce      = SecureRandom.hex(16)
       @init_script = TOPIC_CONTENT_VIEW_INIT_SCRIPT
+      render :show, formats: [:html]
     end
 
     private
