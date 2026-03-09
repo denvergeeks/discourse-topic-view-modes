@@ -1,56 +1,55 @@
 # name: discourse-topic-content-view
-# about: Serves a topic's first-post cooked HTML as a bare page (no Discourse chrome)
+# about: Renders topic title + cooked content inside Discourse SPA (all theme/plugin CSS+JS active)
 # version: 1.0.0
 # authors: @denvergeeks
 # url: https://github.com/denvergeeks/discourse-topic-content-view
 
 enabled_site_setting :topic_content_view_enabled
 
+register_asset "stylesheets/topic-content-view.scss", :desktop
+
 after_initialize do
+  # JSON API — called by the Ember route's model() hook
   class ::TopicContentViewController < ::ApplicationController
     requires_plugin 'discourse-topic-content-view'
-
-    # Skip XHR check, CSRF, preload — this is a standalone HTML endpoint
-    skip_before_action :check_xhr
-    skip_before_action :preload_json
     skip_before_action :verify_authenticity_token
-    skip_before_action :redirect_to_login_if_required, raise: false
 
     def show
-      topic_id = params[:id] || params[:slug]
-
+      topic_id = params[:id]
       begin
         topic_view = TopicView.new(topic_id, current_user)
       rescue Discourse::NotFound, Discourse::InvalidAccess
-        return render plain: "Not found", status: 404
+        return render json: { error: 'not_found' }, status: 404
       end
 
       topic = topic_view.topic
-      return render plain: "Not found", status: 404 unless topic
+      return render json: { error: 'not_found' }, status: 404 unless topic
 
       begin
         guardian.ensure_can_see!(topic)
       rescue Discourse::InvalidAccess
-        return render plain: "Not found", status: 404
+        return render json: { error: 'not_found' }, status: 404
       end
 
       post = topic.ordered_posts.first
-      return render plain: "Not found", status: 404 unless post
+      return render json: { error: 'not_found' }, status: 404 unless post
 
-      @title  = topic.title
-      @cooked = post.cooked
-
-      render template: "topic_content_view/show",
-             layout: false,
-             formats: [:html],
-             content_type: "text/html"
+      render json: {
+        id:            topic.id,
+        title:         topic.title,
+        slug:          topic.slug,
+        category_id:   topic.category_id,
+        category_name: topic.category&.name,
+        tags:          topic.tags.map(&:name),
+        cooked:        post.cooked
+      }
     end
   end
 
   Discourse::Application.routes.prepend do
-    get '/tc/:slug/:id' => 'topic_content_view#show',
-        constraints: { id: /\d+/, slug: /[^\/]+/ }
+    # JSON API endpoint — called by Ember ajax() with .json suffix
     get '/tc/:id' => 'topic_content_view#show',
-        constraints: { id: /[^.\/]+/ }
+        constraints: { id: /\d+/ },
+        format: 'json'
   end
 end
