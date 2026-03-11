@@ -1,16 +1,19 @@
 // ============================================================
-// Topic Content View — hide all Discourse chrome on /tc/ routes
-// The body gets class .topic-content-view-route from Discourse
+// Topic Content View — hide all Discourse chrome when ?tc=1
+// The initializer adds body.tc-mode when the query param is present
 // ============================================================
 
-.topic-content-view-route {
-  // Hide navigation / header
+body.tc-mode {
+  // Hide header
   #global-notice,
-  #main-outlet-wrapper > .sidebar-wrapper,
-  #main-outlet-wrapper > .d-header-wrap,
   .d-header,
   .header-cloak,
-  #global-notice,
+  #main-outlet-wrapper > .sidebar-wrapper,
+  #main-outlet-wrapper > .d-header-wrap {
+    display: none !important;
+  }
+
+  // Hide all topic chrome — replies, nav, footer, sidebar, progress bar
   .list-controls,
   .navigation-container,
   .nav-pills,
@@ -29,52 +32,72 @@
   .topic-map,
   .signup-cta,
   .footer-message,
-  .topic-footer-main,
-  footer.topic-footer-main {
+  footer.topic-footer-main,
+  // Hide all posts except the first (OP)
+  .topic-post:not(:first-child),
+  .small-action {
     display: none !important;
   }
 
-  // Let the main outlet fill the page cleanly
+  // Remove header padding from main outlet
   #main-outlet {
     padding-top: 0 !important;
     margin-top: 0 !important;
   }
 
-  // The sidebar layout wrapper — remove sidebar padding
+  // Remove sidebar grid layout
   #main-outlet-wrapper {
     display: block !important;
     grid-template-columns: none !important;
     padding: 0 !important;
   }
-}
 
-// ============================================================
-// Styles for the content itself
-// ============================================================
-
-.tcv-wrap {
-  max-width: 700px;
-  margin: 2em auto;
-  padding: 0 1em;
-
-  .tcv-title {
-    font-size: var(--font-up-4);
-    line-height: 1.3;
-    margin: 0 0 0.75em;
-    color: var(--primary);
-  }
-
-  .tcv-cooked {
-    line-height: 1.6;
-    color: var(--primary);
-
-    img {
-      max-width: 100%;
-      height: auto;
+  // Clean up the first post appearance
+  .topic-post:first-child {
+    .post-menu-area,
+    .actions,
+    .post-links-container,
+    nav.post-controls {
+      display: none !important;
     }
 
-    a {
-      color: var(--tertiary);
+    article.boxed {
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    .cooked {
+      max-width: 700px;
+      margin: 1.5em auto;
+      padding: 0 1em;
+      line-height: 1.6;
+      color: var(--primary);
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      a {
+        color: var(--tertiary);
+      }
+    }
+  }
+
+  // Topic title
+  #topic-title {
+    max-width: 700px;
+    margin: 1.5em auto 0;
+    padding: 0 1em;
+
+    h1 {
+      font-size: var(--font-up-3);
+      line-height: 1.3;
+    }
+
+    .edit-topic-title,
+    .topic-statuses {
+      display: none !important;
     }
   }
 }
