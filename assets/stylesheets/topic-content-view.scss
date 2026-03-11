@@ -1,9 +1,9 @@
 // ============================================================
-// Topic Content View — hide all Discourse chrome when ?tc=1
-// The initializer adds body.tc-mode when the query param is present
+// Topic Content View — hide all Discourse chrome when ?tcv=1
+// The initializer adds body.tcv-mode when the query param is present
 // ============================================================
 
-body.tc-mode {
+body.tcv-mode {
   // Hide header
   #global-notice,
   .d-header,
