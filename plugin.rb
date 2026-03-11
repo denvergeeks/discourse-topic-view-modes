@@ -9,7 +9,7 @@ enabled_site_setting :topic_content_view_enabled
 register_asset "stylesheets/topic-content-view.scss", :desktop
 
 after_initialize do
-  # JSON API — called by the Ember route's model() hook via ajax("/t/:id/view.json")
+  # JSON API — called by the Ember route's model() hook via ajax("/t/:id/tc.json")
   class ::TopicContentViewController < ::ApplicationController
     requires_plugin 'discourse-topic-content-view'
     skip_before_action :verify_authenticity_token
@@ -47,15 +47,15 @@ after_initialize do
   end
 
   Discourse::Application.routes.prepend do
-    # JSON API — Ember ajax calls /t/:id/view.json
-    # Uses /t/ prefix which Nginx already proxies — no server config changes needed
-    get '/t/:id/view' => 'topic_content_view#show',
+    # JSON API — Ember ajax calls /t/:id/tc.json
+    # /t/ is already proxied by Nginx — no server config changes needed
+    get '/t/:id/tc' => 'topic_content_view#show',
         constraints: { id: /\d+/ },
         format: 'json'
 
-    # SPA shell — /t/:slug/:id/view browser requests
-    # /t/ is already proxied by Nginx; list#index serves the Discourse SPA HTML
-    get '/t/:slug/:id/view' => 'list#index',
+    # SPA shell — browser navigates to /t/:slug/:id/tc
+    # list#index renders the Discourse SPA HTML; Ember then handles the URL client-side
+    get '/t/:slug/:id/tc' => 'list#index',
         constraints: { id: /\d+/ }
   end
 end
