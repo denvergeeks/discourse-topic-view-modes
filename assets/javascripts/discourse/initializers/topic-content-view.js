@@ -37,14 +37,16 @@ export default {
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
 
-    withPluginApi((api) => {
+    withPluginApi("1.3.0", (api) => {
       api.onPageChange(() => {
         clearTcvClasses();
         if (!siteSettings.topic_content_view_enabled) return;
+
         const modeParam = new URLSearchParams(window.location.search).get(
           "tcv"
         );
         if (!modeParam) return;
+
         const enabledModes = parseModes(
           siteSettings.topic_content_view_modes
         );
