@@ -9,6 +9,8 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { i18n } from "discourse-i18n";
 
+const eq = (a, b) => a === b;
+
 export default class AdminPluginsTopicContentView extends Component {
   @service siteSettings;
 
@@ -32,7 +34,6 @@ export default class AdminPluginsTopicContentView extends Component {
       const result = await ajax("/admin/plugins/topic-content-view");
       this.modes = result.modes || [];
     } catch (e) {
-      // fallback: try parsing from siteSettings
       try {
         const raw = this.siteSettings.topic_content_view_modes;
         this.modes = JSON.parse(raw || "[]");
@@ -130,7 +131,10 @@ export default class AdminPluginsTopicContentView extends Component {
         <div class="tcv-admin-controls">
           <DToggleSwitch
             @state={{this.pluginEnabled}}
-            @label={{if this.pluginEnabled (i18n "topic_content_view.admin.enabled") (i18n "topic_content_view.admin.disabled")}}
+            @label={{if this.pluginEnabled
+              (i18n "topic_content_view.admin.enabled")
+              (i18n "topic_content_view.admin.disabled")
+            }}
             {{on "click" this.togglePlugin}}
           />
         </div>
@@ -141,10 +145,17 @@ export default class AdminPluginsTopicContentView extends Component {
       {{else}}
         <div class="tcv-modes-list">
           {{#each this.modes as |mode|}}
-            <div class="tcv-mode-card {{if mode.preset \"tcv-mode-preset\"}} {{unless mode.enabled \"tcv-mode-disabled\"}}">
+            <div
+              class={{if mode.preset
+                (if mode.enabled "tcv-mode-card tcv-mode-preset" "tcv-mode-card tcv-mode-preset tcv-mode-disabled")
+                (if mode.enabled "tcv-mode-card" "tcv-mode-card tcv-mode-disabled")
+              }}
+            >
               <div class="tcv-mode-card-header">
                 <div class="tcv-mode-card-title">
-                  <span class="tcv-mode-slug">?tcv={{if mode.value mode.value (i18n "topic_content_view.admin.untitled")}}</span>
+                  <span class="tcv-mode-slug">
+                    ?tcv={{if mode.value mode.value (i18n "topic_content_view.admin.untitled")}}
+                  </span>
                   {{#if mode.label}}
                     <span class="tcv-mode-label">{{mode.label}}</span>
                   {{/if}}
@@ -155,9 +166,11 @@ export default class AdminPluginsTopicContentView extends Component {
                 <div class="tcv-mode-card-actions">
                   <DToggleSwitch
                     @state={{mode.enabled}}
-                    @label={{if mode.enabled (i18n "topic_content_view.admin.enabled") (i18n "topic_content_view.admin.disabled")}}
+                    @label={{if mode.enabled
+                      (i18n "topic_content_view.admin.enabled")
+                      (i18n "topic_content_view.admin.disabled")
+                    }}
                     {{on "click" (fn this.toggleModeEnabled mode)}}
-                    @disabled={{mode.preset}}
                   />
                   <button
                     type="button"
