@@ -2,10 +2,16 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
+import { fn } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { i18n } from "discourse-i18n";
+
+function eq(a, b) {
+  return a === b;
+}
 
 export default class AdminPluginsTopicContentView extends Component {
   @service siteSettings;
@@ -30,10 +36,6 @@ export default class AdminPluginsTopicContentView extends Component {
     } catch (e) {
       this.modes = [];
     }
-  }
-
-  modeSlug(mode) {
-    return mode.value ? `?tcv=${mode.value}` : "";
   }
 
   @action
