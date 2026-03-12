@@ -2,3 +2,23 @@ plugins:
   topic_content_view_enabled:
     default: true
     client: true
+
+  # Built-in view modes — value is a pipe-separated list of CSS classes
+  # applied to <body> when ?tcv=MODE is in the URL.
+  # Format: "mode_value|class1 class2 class3"
+  # The mode_value is what goes in the URL: ?tcv=minimal, ?tcv=full, etc.
+  topic_content_view_modes:
+    default: |
+      1|tcv-mode
+      minimal|tcv-mode tcv-minimal
+      full|tcv-mode tcv-full
+    type: list
+    client: true
+
+  # Allow admins to define custom named view modes in addition to the built-ins.
+  # Same pipe-separated format: "mode_value|class1 class2 class3"
+  # Example: "printable|tcv-mode tcv-printable" creates ?tcv=printable
+  topic_content_view_custom_modes:
+    default: ""
+    type: list
+    client: true
