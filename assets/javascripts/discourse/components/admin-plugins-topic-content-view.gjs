@@ -10,7 +10,6 @@ import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { i18n } from "discourse-i18n";
 
-// Tiny unique-id helper so each new mode gets a stable JS key
 let _uid = 0;
 function uid() { return ++_uid; }
 
@@ -22,7 +21,7 @@ class ModeItem {
   @tracked preset;
   @tracked enabled;
   @tracked expanded = false;
-  _key; // stable identity for {{each}}
+  _key;
 
   constructor({ value, label, classes, css, preset, enabled }) {
     this.value = value ?? "";
@@ -30,7 +29,7 @@ class ModeItem {
     this.classes = classes ?? "";
     this.css = css ?? "";
     this.preset = preset ?? false;
-    this.enabled = enabled !== false; // default on
+    this.enabled = enabled !== false;
     this._key = uid();
   }
 }
@@ -55,7 +54,6 @@ export default class AdminPluginsTopicContentView extends Component {
     }
   }
 
-  // ── Actions ─────────────────────────────────────────────────────────────────────────────
   @action
   addMode() {
     const newMode = new ModeItem({ value: "", label: "", classes: "tcv-mode", css: "", preset: false, enabled: true });
@@ -122,7 +120,6 @@ export default class AdminPluginsTopicContentView extends Component {
     }
   }
 
-  // ── Template ──────────────────────────────────────────────────────────────────────────────
   <template>
     <div class="tcv-admin">
       <div class="tcv-admin-header">
@@ -152,16 +149,13 @@ export default class AdminPluginsTopicContentView extends Component {
       <div class="tcv-mode-list">
         {{#each this.modes key="_key" as |mode|}}
           <div class="tcv-mode-card {{if mode.expanded 'is-expanded'}} {{if mode.preset 'is-preset'}} {{unless mode.enabled 'is-disabled'}}">
-            {{! ── Card header ── }}
             <div class="tcv-mode-card-header">
-              <span
+              <button
+                type="button"
                 class="tcv-mode-card-toggle-area"
-                role="button"
                 {{on "click" (fn this.toggleExpanded mode)}}
               >
-                <span class="tcv-mode-card-arrow">
-                  {{#if mode.expanded}}▼{{else}}▶{{/if}}
-                </span>
+                <span class="tcv-mode-card-arrow">{{if mode.expanded "▼" "▶"}}</span>
                 <span class="tcv-mode-card-title">
                   {{#if mode.label}}
                     {{mode.label}}
@@ -169,18 +163,16 @@ export default class AdminPluginsTopicContentView extends Component {
                     <em class="tcv-untitled">{{i18n "topic_content_view.admin.untitled"}}</em>
                   {{/if}}
                 </span>
-                <span class="tcv-mode-card-slug">
-                  {{#if mode.value}}?tcv={{mode.value}}{{/if}}
-                </span>
+                <span class="tcv-mode-card-slug">{{if mode.value (concat "?tcv=" mode.value)}}</span>
                 {{#if mode.preset}}
                   <span class="tcv-preset-badge">{{i18n "topic_content_view.admin.preset"}}</span>
                 {{/if}}
-              </span>
+              </button>
               <span class="tcv-mode-card-controls">
                 <DToggleSwitch
                   @state={{mode.enabled}}
                   @label={{if mode.enabled "topic_content_view.admin.enabled" "topic_content_view.admin.disabled"}}
-                  {{on "click" (fn this.toggleEnabled mode)}}
+                  @onChange={{fn this.toggleEnabled mode}}
                 />
                 {{#unless mode.preset}}
                   <DButton
@@ -193,7 +185,6 @@ export default class AdminPluginsTopicContentView extends Component {
               </span>
             </div>
 
-            {{! ── Card body (expanded) ── }}
             {{#if mode.expanded}}
               <div class="tcv-mode-card-body">
                 <div class="tcv-field-row">
