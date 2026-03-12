@@ -10,7 +10,7 @@ enabled_site_setting :topic_content_view_enabled
 
 register_asset "stylesheets/topic-content-view.scss", :desktop
 
-add_admin_route "topic_content_view.admin.title", "topic-content-view", use_new_show_route: true
+add_admin_route "topic_content_view.admin.title", "topic-content-view"
 
 after_initialize do
   module ::TopicContentView
