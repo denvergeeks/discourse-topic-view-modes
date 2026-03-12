@@ -3,31 +3,15 @@ plugins:
     default: true
     client: true
 
-  # Built-in view modes — value is a pipe-separated list of CSS classes
-  # applied to <body> when ?tcv=MODE is in the URL.
-  # Format: "mode_value|class1 class2 class3"
-  # The mode_value is what goes in the URL: ?tcv=minimal, ?tcv=full, etc.
+  # All view modes (presets + user-defined) stored as a JSON array.
+  # Each entry: { "value": "slug", "label": "Display Name", "classes": "tcv-mode tcv-slug", "css": "body.tcv-mode { ... }" }
+  # - value:   the ?tcv=VALUE slug used in the URL
+  # - label:   human-readable name shown in the admin UI
+  # - classes: space-separated body classes applied when the mode is active
+  # - css:     custom CSS injected into <head> at runtime (plain CSS, not SCSS)
+  # Managed via Admin > Plugins > Topic Content View
   topic_content_view_modes:
     default: |
-      1|tcv-mode
-      minimal|tcv-mode tcv-minimal
-      full|tcv-mode tcv-full
-    type: list
-    client: true
-
-  # Allow admins to define custom named view modes in addition to the built-ins.
-  # Same pipe-separated format: "mode_value|class1 class2 class3"
-  # Example: "printable|tcv-mode tcv-printable" creates ?tcv=printable
-  topic_content_view_custom_modes:
-    default: ""
-    type: list
-    client: true
-
-  # Per-mode SCSS — stored as a JSON object mapping mode_value to SCSS string.
-  # Example: {"1":"body.tcv-mode { ... }","minimal":"body.tcv-minimal { ... }"}
-  # Managed via Admin > Plugins > Topic Content View (SCSS editor UI).
-  # The initializer injects the active mode's SCSS into a <style> tag at runtime.
-  topic_content_view_mode_scss:
-    default: "{}"
+      [{"value":"content","label":"Content Only","classes":"tcv-mode","css":"","preset":true},{"value":"minimal","label":"Minimal","classes":"tcv-mode tcv-minimal","css":"","preset":true},{"value":"full","label":"Full","classes":"tcv-mode tcv-full","css":"","preset":true}]
     type: string
     client: true
