@@ -47,6 +47,7 @@ after_initialize do
           classes: m[:classes].to_s.strip,
           css:     m[:css].to_s,
           preset:  m[:preset].present? ? true : false,
+          enabled: m[:enabled] == false || m[:enabled] == 'false' ? false : true,
         }
       end
 
@@ -67,16 +68,16 @@ after_initialize do
 
     def default_modes
       [
-        { 'value' => 'content', 'label' => 'Content Only',  'classes' => 'tcv-mode',            'css' => '', 'preset' => true },
-        { 'value' => 'minimal', 'label' => 'Minimal',       'classes' => 'tcv-mode tcv-minimal', 'css' => '', 'preset' => true },
-        { 'value' => 'full',    'label' => 'Full',          'classes' => 'tcv-mode tcv-full',    'css' => '', 'preset' => true },
+        { 'value' => 'content', 'label' => 'Content Only', 'classes' => 'tcv-mode',            'css' => '', 'preset' => true, 'enabled' => true },
+        { 'value' => 'minimal', 'label' => 'Minimal',      'classes' => 'tcv-mode tcv-minimal', 'css' => '', 'preset' => true, 'enabled' => true },
+        { 'value' => 'full',    'label' => 'Full',          'classes' => 'tcv-mode tcv-full',    'css' => '', 'preset' => true, 'enabled' => true },
       ]
     end
   end
 
   TopicContentView::Engine.routes.draw do
-    get  '/' => 'admin#index'
-    put  '/' => 'admin#update'
+    get '/' => 'admin#index'
+    put '/' => 'admin#update'
   end
 
   Discourse::Application.routes.prepend do
