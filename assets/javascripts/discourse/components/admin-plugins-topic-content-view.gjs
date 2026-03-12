@@ -2,217 +2,173 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { on } from "@ember/modifier";
-import { fn } from "@ember/helper";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import DButton from "discourse/components/d-button";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { i18n } from "discourse-i18n";
 
-let _uid = 0;
-function uid() { return ++_uid; }
-
-class ModeItem {
-  @tracked label;
-  @tracked value;
-  @tracked classes;
-  @tracked css;
-  @tracked preset;
-  @tracked enabled;
-  @tracked expanded = false;
-  _key;
-
-  constructor({ value, label, classes, css, preset, enabled }) {
-    this.value   = value   ?? "";
-    this.label   = label   ?? "";
-    this.classes = classes ?? "";
-    this.css     = css     ?? "";
-    this.preset  = preset  ?? false;
-    this.enabled = enabled !== false;
-    this._key    = uid();
-  }
-}
-
 export default class AdminPluginsTopicContentView extends Component {
-  @service router;
-  @tracked modes = [];
-  @tracked _globalSaving = false;
-  @tracked _globalSaved = false;
+  @service siteSettings;
 
-  constructor(owner, args) {
-    super(owner, args);
-    this._loadModes();
+  @tracked modes = [];
+  @tracked saving = false;
+  @tracked expandedMode = null;
+
+  constructor() {
+    super(...arguments);
+    this.loadModes();
   }
 
-  async _loadModes() {
+  get pluginEnabled() {
+    return this.siteSettings.topic_content_view_enabled;
+  }
+
+  async loadModes() {
     try {
-      const data = await ajax("/admin/plugins/topic-content-view");
-      this.modes = (data.modes || []).map((m) => new ModeItem(m));
+      const raw = this.siteSettings.topic_content_view_modes;
+      this.modes = JSON.parse(raw || "[]");
     } catch (e) {
-      popupAjaxError(e);
+      this.modes = [];
     }
   }
 
-  @action
-  addMode() {
-    const newMode = new ModeItem({
-      value: "", label: "", classes: "tcv-mode", css: "", preset: false, enabled: true
-    });
-    newMode.expanded = true;
-    this.modes = [newMode, ...this.modes];
+  modeSlug(mode) {
+    return mode.value ? `?tcv=${mode.value}` : "";
   }
 
   @action
-  toggleExpanded(mode) {
-    mode.expanded = !mode.expanded;
+  togglePlugin() {
+    this.saving = true;
+    ajax("/admin/site_settings/topic_content_view_enabled", {
+      type: "PUT",
+      data: { value: !this.pluginEnabled },
+    })
+      .then(() => {
+        this.siteSettings.topic_content_view_enabled = !this.pluginEnabled;
+      })
+      .catch(popupAjaxError)
+      .finally(() => {
+        this.saving = false;
+      });
   }
 
   @action
-  toggleEnabled(mode) {
-    mode.enabled = !mode.enabled;
-  }
-
-  @action
-  removeMode(mode) {
-    if (mode.preset) return;
-    this.modes = this.modes.filter((m) => m._key !== mode._key);
+  toggleExpand(mode) {
+    this.expandedMode = this.expandedMode === mode.value ? null : mode.value;
   }
 
   @action
   updateField(mode, field, event) {
     mode[field] = event.target.value;
+    this.saveModes();
   }
 
   @action
   updateCss(mode, event) {
     mode.css = event.target.value;
+    this.saveModes();
   }
 
   @action
-  async saveAll() {
-    this._globalSaving = true;
-    this._globalSaved  = false;
-    const invalid = this.modes.find((m) => !m.value.trim());
-    if (invalid) {
-      invalid.expanded    = true;
-      this._globalSaving  = false;
-      return;
-    }
-    try {
-      await ajax("/admin/plugins/topic-content-view", {
-        type: "PUT",
-        data: {
-          modes: this.modes.map((m) => ({
-            value:   m.value.trim(),
-            label:   m.label.trim(),
-            classes: m.classes.trim(),
-            css:     m.css,
-            preset:  m.preset,
-            enabled: m.enabled,
-          })),
-        },
-      });
-      this._globalSaved = true;
-      setTimeout(() => (this._globalSaved = false), 2500);
-    } catch (e) {
-      popupAjaxError(e);
-    } finally {
-      this._globalSaving = false;
-    }
+  toggleModeEnabled(mode) {
+    mode.enabled = !mode.enabled;
+    this.saveModes();
+  }
+
+  @action
+  addMode() {
+    this.modes = [
+      ...this.modes,
+      {
+        value: "",
+        label: "",
+        icon: "",
+        classes: "",
+        css: "",
+        enabled: true,
+      },
+    ];
+  }
+
+  @action
+  removeMode(mode) {
+    this.modes = this.modes.filter((m) => m !== mode);
+    this.saveModes();
+  }
+
+  saveModes() {
+    ajax("/admin/site_settings/topic_content_view_modes", {
+      type: "PUT",
+      data: { value: JSON.stringify(this.modes) },
+    }).catch(popupAjaxError);
   }
 
   <template>
-    <div class="tcv-admin">
+    <div class="tcv-admin-panel">
       <div class="tcv-admin-header">
-        <div class="tcv-admin-header-text">
-          <h2>{{i18n "topic_content_view.admin.title"}}</h2>
-          <p class="tcv-admin-description">{{i18n "topic_content_view.admin.description"}}</p>
-        </div>
-        <div class="tcv-admin-header-actions">
-          <DButton
-            @action={{this.addMode}}
-            @label="topic_content_view.admin.add_mode"
-            @icon="plus"
-            class="btn-default tcv-add-btn"
-          />
-          <DButton
-            @action={{this.saveAll}}
-            @label={{if this._globalSaving "saving" "topic_content_view.admin.save_all"}}
-            @disabled={{this._globalSaving}}
-            class="btn-primary tcv-save-all-btn"
-          />
-          {{#if this._globalSaved}}
-            <span class="tcv-saved-indicator">{{i18n "saved"}}</span>
-          {{/if}}
-        </div>
+        <h2>{{i18n "topic_content_view.admin.title"}}</h2>
+        <DToggleSwitch
+          @state={{this.pluginEnabled}}
+          @label={{i18n "topic_content_view.admin.enabled_label"}}
+          @onChange={{this.togglePlugin}}
+        />
       </div>
 
-      <div class="tcv-mode-list">
-        {{#each this.modes key="_key" as |mode|}}
-          <div class="tcv-mode-card {{if mode.expanded 'is-expanded'}} {{if mode.preset 'is-preset'}} {{unless mode.enabled 'is-disabled'}}">
+      <div class="tcv-modes-list">
+        {{#each this.modes as |mode|}}
+          <div class="tcv-mode-card">
             <div class="tcv-mode-card-header">
-              <button
-                type="button"
-                class="tcv-mode-card-toggle-area"
-                {{on "click" (fn this.toggleExpanded mode)}}
-              >
-                <span class="tcv-mode-card-arrow">{{if mode.expanded "▼" "▶"}}</span>
-                <span class="tcv-mode-card-title">
-                  {{#if mode.label}}
-                    {{mode.label}}
-                  {{else}}
-                    <em class="tcv-untitled">{{i18n "topic_content_view.admin.untitled"}}</em>
-                  {{/if}}
-                </span>
-                <span class="tcv-mode-card-slug">{{if mode.value (concat "?tcv=" mode.value)}}</span>
-                {{#if mode.preset}}
-                  <span class="tcv-preset-badge">{{i18n "topic_content_view.admin.preset"}}</span>
-                {{/if}}
-              </button>
-              <span class="tcv-mode-card-controls">
+              <span class="tcv-mode-label">{{mode.label}}</span>
+              <div class="tcv-mode-actions">
                 <DToggleSwitch
                   @state={{mode.enabled}}
-                  @label={{if mode.enabled "topic_content_view.admin.enabled" "topic_content_view.admin.disabled"}}
-                  @onChange={{fn this.toggleEnabled mode}}
+                  @onChange={{fn this.toggleModeEnabled mode}}
                 />
-                {{#unless mode.preset}}
-                  <DButton
-                    @action={{fn this.removeMode mode}}
-                    @icon="trash-can"
-                    @title="topic_content_view.admin.delete_mode"
-                    class="btn-flat tcv-delete-btn"
-                  />
-                {{/unless}}
-              </span>
+                <button
+                  type="button"
+                  class="btn btn-flat tcv-expand-btn"
+                  {{on "click" (fn this.toggleExpand mode)}}
+                >
+                  {{if (eq this.expandedMode mode.value) "▲" "▼"}}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger btn-small"
+                  {{on "click" (fn this.removeMode mode)}}
+                >
+                  {{i18n "topic_content_view.admin.remove"}}
+                </button>
+              </div>
             </div>
 
-            {{#if mode.expanded}}
+            {{#if (eq this.expandedMode mode.value)}}
               <div class="tcv-mode-card-body">
+                <div class="tcv-field-row">
+                  <label>{{i18n "topic_content_view.admin.field_value"}}</label>
+                  <input
+                    type="text"
+                    value={{mode.value}}
+                    placeholder="e.g. compact"
+                    {{on "input" (fn this.updateField mode "value")}}
+                  />
+                </div>
                 <div class="tcv-field-row">
                   <label>{{i18n "topic_content_view.admin.field_label"}}</label>
                   <input
                     type="text"
                     value={{mode.label}}
-                    placeholder="e.g. Clean Read"
+                    placeholder="e.g. Compact View"
                     {{on "input" (fn this.updateField mode "label")}}
                   />
                 </div>
                 <div class="tcv-field-row">
-                  <label>
-                    {{i18n "topic_content_view.admin.field_value"}}
-                    {{#if mode.preset}}
-                      <span class="tcv-field-readonly-note">({{i18n "topic_content_view.admin.preset_readonly"}})</span>
-                    {{/if}}
-                  </label>
+                  <label>{{i18n "topic_content_view.admin.field_icon"}}</label>
                   <input
                     type="text"
-                    value={{mode.value}}
-                    placeholder="e.g. clean"
-                    disabled={{mode.preset}}
-                    {{on "input" (fn this.updateField mode "value")}}
+                    value={{mode.icon}}
+                    placeholder="e.g. list"
+                    {{on "input" (fn this.updateField mode "icon")}}
                   />
-                  <p class="tcv-field-hint">{{i18n "topic_content_view.admin.field_value_hint"}}</p>
                 </div>
                 <div class="tcv-field-row">
                   <label>{{i18n "topic_content_view.admin.field_classes"}}</label>
@@ -229,7 +185,7 @@ export default class AdminPluginsTopicContentView extends Component {
                   <textarea
                     class="tcv-css-editor"
                     rows="10"
-                    placeholder="/* CSS injected when ?tcv={{mode.value}} is active */"
+                    placeholder="/* CSS injected when this mode is active */"
                     {{on "input" (fn this.updateCss mode)}}
                   >{{mode.css}}</textarea>
                   <p class="tcv-field-hint">{{i18n "topic_content_view.admin.field_css_hint"}}</p>
@@ -239,6 +195,14 @@ export default class AdminPluginsTopicContentView extends Component {
           </div>
         {{/each}}
       </div>
+
+      <button
+        type="button"
+        class="btn btn-primary tcv-add-mode"
+        {{on "click" this.addMode}}
+      >
+        {{i18n "topic_content_view.admin.add_mode"}}
+      </button>
     </div>
   </template>
 }
