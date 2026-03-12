@@ -40,7 +40,7 @@ export default class AdminPluginsTopicContentView extends Component {
   async loadModes() {
     this.loading = true;
     try {
-      const result = await ajax("/admin/plugins/topic-content-view");
+      const result = await ajax("/admin/plugins/discourse-topic-content-view");
       this.modes = result.modes || [];
     } catch (e) {
       try {
@@ -113,7 +113,7 @@ export default class AdminPluginsTopicContentView extends Component {
   async saveAll() {
     this.saving = true;
     try {
-      await ajax("/admin/plugins/topic-content-view", {
+      await ajax("/admin/plugins/discourse-topic-content-view", {
         type: "PUT",
         contentType: "application/json",
         data: JSON.stringify({ modes: this.modes }),
