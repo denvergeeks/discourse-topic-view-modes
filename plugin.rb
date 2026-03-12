@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-
 # name: discourse-topic-content-view
-# about: Adds configurable CSS classes to body via ?tcv=MODE query param, enabling mode-specific topic presentation (hide chrome, show only cooked content, etc.)
+# about: Adds configurable CSS classes to body via ?tcv=MODE query param
 # version: 2.0.0
 # authors: @denvergeeks
 # url: https://github.com/denvergeeks/discourse-topic-content-view
