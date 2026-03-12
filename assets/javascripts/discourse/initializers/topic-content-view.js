@@ -27,6 +27,33 @@ function clearTcvClasses() {
   document.body.classList.remove(...toRemove);
 }
 
+// Inject (or remove) the per-mode custom SCSS into a <style> tag
+function applyModeScss(modeValue, scssMap) {
+  // Remove any previously injected style
+  const existing = document.getElementById("tcv-mode-custom-scss");
+  if (existing) existing.remove();
+
+  if (!modeValue || !scssMap) return;
+
+  let map = {};
+  try {
+    map = typeof scssMap === "string" ? JSON.parse(scssMap) : scssMap;
+  } catch (_) {
+    return;
+  }
+
+  const scss = map[modeValue];
+  if (!scss || !scss.trim()) return;
+
+  // NOTE: Discourse compiles SCSS server-side; client-side we inject as plain CSS.
+  // Admins should write valid CSS (not SCSS-specific syntax like nesting or variables
+  // beyond CSS custom properties) for runtime injection to work correctly.
+  const style = document.createElement("style");
+  style.id = "tcv-mode-custom-scss";
+  style.textContent = scss;
+  document.head.appendChild(style);
+}
+
 export default {
   name: "topic-content-view",
 
@@ -52,6 +79,9 @@ export default {
         if (match) {
           document.body.classList.add(...match.classes);
         }
+
+        // Inject admin-saved SCSS for this mode
+        applyModeScss(modeParam, siteSettings.topic_content_view_mode_scss);
       });
     });
   },
