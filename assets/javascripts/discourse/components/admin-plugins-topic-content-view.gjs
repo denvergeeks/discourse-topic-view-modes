@@ -124,7 +124,7 @@ export default class AdminPluginsTopicContentView extends Component {
       this.saving = false;
     }
   }
-}
+
 
 <template>
   <div class="topic-content-view-admin">
@@ -194,3 +194,4 @@ export default class AdminPluginsTopicContentView extends Component {
     {{/if}}
   </div>
 </template>
+}
