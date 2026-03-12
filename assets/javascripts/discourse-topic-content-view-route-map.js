@@ -1,5 +1,5 @@
 export default {
-  resource: "admin.adminPlugins.show",
+  resource: "admin.adminPlugins",
   path: "/plugins",
   map() {
     this.route("topic-content-view", { path: "/topic-content-view" });
