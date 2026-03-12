@@ -22,3 +22,12 @@ plugins:
     default: ""
     type: list
     client: true
+
+  # Per-mode SCSS — stored as a JSON object mapping mode_value to SCSS string.
+  # Example: {"1":"body.tcv-mode { ... }","minimal":"body.tcv-minimal { ... }"}
+  # Managed via Admin > Plugins > Topic Content View (SCSS editor UI).
+  # The initializer injects the active mode's SCSS into a <style> tag at runtime.
+  topic_content_view_mode_scss:
+    default: "{}"
+    type: string
+    client: true
