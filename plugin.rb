@@ -9,7 +9,7 @@ enabled_site_setting :topic_content_view_enabled
 register_asset "stylesheets/topic-content-view.scss", :desktop
 
 # Register the plugin admin page link in Discourse admin panel
-add_admin_route 'topic_content_view.admin.title', 'topic-content-view'
+add_admin_route 'topic_content_view.admin.title', 'topic-content-view', use_client_i18n: true
 
 after_initialize do
   module ::TopicContentView
