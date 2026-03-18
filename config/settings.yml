@@ -1,17 +1,17 @@
 plugins:
-  topic_content_view_enabled:
+  topic_view_modes_enabled:
     default: true
     client: true
 
   # All view modes (presets + user-defined) stored as a JSON array.
-  # Each entry: { "value": "slug", "label": "Display Name", "classes": "tcv-mode tcv-slug", "css": "body.tcv-mode { ... }" }
-  # - value:   the ?tcv=VALUE slug used in the URL
+  # Each entry: { "value": "slug", "label": "Display Name", "classes": "tvm-mode tvm-slug", "css": "body.tvm-mode { ... }" }
+  # - value:   the ?tvm=VALUE slug used in the URL
   # - label:   human-readable name shown in the admin UI
   # - classes: space-separated body classes applied when the mode is active
   # - css:     custom CSS injected into <head> at runtime (plain CSS, not SCSS)
-  # Managed via Admin > Plugins > Topic Content View
-  topic_content_view_modes:
+  # Managed via Admin > Plugins > Topic View Modes
+  topic_view_modes_modes:
     default: |
-      [{"value":"content","label":"Content Only","classes":"tcv-mode","css":"","preset":true},{"value":"min","label":"Minimal","classes":"tcv-mode tcv-minimal","css":"","preset":true},{"value":"full","label":"Full","classes":"tcv-mode tcv-full","css":"","preset":true}]
+      [{"value":"content","label":"Content Only","classes":"tvm-mode","css":"","preset":true},{"value":"min","label":"Minimal","classes":"tvm-mode tvm-minimal","css":"","preset":true},{"value":"full","label":"Full","classes":"tvm-mode tvm-full","css":"","preset":true}]
     type: string
     client: true
