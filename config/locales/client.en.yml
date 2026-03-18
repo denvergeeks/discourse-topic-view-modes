@@ -1,10 +1,10 @@
 en:
   js:
-    topic_content_view:
+    topic_view_modes:
       admin:
-        title: "Topic Content View"
+        title: "Topic View Modes"
         plugin_enabled: "Plugin Enabled"
-        description: "Manage view modes for the ?tcv=MODE URL parameter. Each mode applies body classes and optional CSS. Toggle on/off without deleting."
+        description: "Manage view modes for the ?tvm=MODE URL parameter. Each mode applies body classes and optional CSS. Toggle on/off without deleting."
         add_mode: "Add View Mode"
         save_all: "Save All"
         preset: "preset"
@@ -15,8 +15,8 @@ en:
         delete_mode: "Delete this mode"
         field_label: "Name"
         field_value: "URL slug"
-        field_value_hint: "Used in the URL as ?tcv=YOUR_SLUG"
+        field_value_hint: "Used in the URL as ?tvm=YOUR_SLUG"
         field_classes: "Body classes"
-        field_classes_hint: "Space-separated CSS classes added to body. Always include tcv-mode as the first class."
+        field_classes_hint: "Space-separated CSS classes added to body. Always include tvm-mode as the first class."
         field_css: "Custom CSS"
         field_css_hint: "Plain CSS injected at runtime when this mode is active."
