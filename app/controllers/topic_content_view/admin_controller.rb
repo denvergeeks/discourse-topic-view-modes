@@ -26,7 +26,7 @@ module TopicViewModes
         }
       end
 
-      SiteSetting.topic_view_modes = sanitized.to_json
+      SiteSetting.topic_view_modes_modes = sanitized.to_json
       render json: success_json
     rescue JSON::ParserError
       render json: failed_json, status: 422
