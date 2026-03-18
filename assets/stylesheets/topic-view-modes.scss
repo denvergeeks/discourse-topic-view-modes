@@ -62,6 +62,7 @@ body.tvm-mode {
     nav.post-controls {
       display: none !important;
     }
+
     article.boxed {
       box-shadow: none !important;
       border: none !important;
@@ -80,58 +81,35 @@ body.tvm-mode {
   #topic-footer-buttons,
   .more-topics__container,
   .powered-by-discourse {
-      display: none !important;
+    display: none !important;
   }
 }
 
-
-
-
 // ============================================================
 // Admin UI — mode card editor styles
+// Matches class names in admin-plugin-discourse-topic-view-modes.gjs
 // ============================================================
-.tvm-admin {
+
+.topic-view-modes-admin {
   max-width: 860px;
   padding: 1.5em 0;
 
-  h2 {
-    font-size: var(--font-up-3);
-    margin-bottom: 0.25em;
-  }
-
-  .tvm-admin-description {
-    color: var(--primary-medium);
-    margin-bottom: 2em;
-  }
-
-  .tvm-admin-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1em;
-    margin-bottom: 2em;
-    flex-wrap: wrap;
-  }
-
-  .tvm-admin-header-text {
-    flex: 1;
-  }
-
-  .tvm-admin-header-actions {
+  // Top bar: plugin enable toggle
+  .admin-plugin-controls {
     display: flex;
     align-items: center;
     gap: 0.75em;
-    flex-shrink: 0;
+    margin-bottom: 2em;
+
+    .admin-plugin-label {
+      font-weight: 600;
+      font-size: var(--font-0);
+      color: var(--primary);
+    }
   }
 
-  .tvm-saved-indicator {
-    color: var(--success);
-    font-size: var(--font-down-1);
-    font-weight: 600;
-  }
-
-  // Mode list
-  .tvm-mode-list {
+  // Mode list container
+  .tvm-modes-list {
     display: flex;
     flex-direction: column;
     gap: 0.75em;
@@ -157,96 +135,74 @@ body.tvm-mode {
     }
   }
 
-  .tvm-mode-card-header {
+  // Card header row (clickable toggle area)
+  .tvm-mode-header {
     display: flex;
     align-items: center;
     background: var(--primary-very-low);
     border-bottom: 1px solid transparent;
+    cursor: pointer;
+    padding: 0.75em 1em;
+    gap: 0.5em;
 
     .is-expanded & {
       border-bottom-color: var(--primary-low);
     }
-  }
-
-  .tvm-mode-card-toggle-area {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    flex: 1;
-    padding: 0.75em 1em;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    color: var(--primary);
-    font-size: var(--font-0);
 
     &:hover {
       background: var(--primary-low);
     }
-  }
 
-  .tvm-mode-card-arrow {
-    font-size: 0.75em;
-    color: var(--primary-medium);
-    flex-shrink: 0;
-  }
+    // Mode label (human-readable name)
+    .tvm-mode-label {
+      font-weight: 600;
+      flex: 1;
+      color: var(--primary);
+      font-size: var(--font-0);
+    }
 
-  .tvm-mode-card-title {
-    font-weight: 600;
-    flex: 1;
-  }
+    // Mode value slug tag
+    .tvm-mode-value.tvm-tag {
+      font-size: var(--font-down-1);
+      color: var(--primary-medium);
+      font-family: monospace;
+      flex-shrink: 0;
+    }
 
-  .tvm-untitled {
-    color: var(--primary-medium);
-    font-weight: 400;
-  }
+    // Preset badge
+    .tvm-badge {
+      font-size: var(--font-down-2);
+      background: var(--tertiary-low);
+      color: var(--tertiary);
+      padding: 0.1em 0.5em;
+      border-radius: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
 
-  .tvm-mode-card-slug {
-    font-size: var(--font-down-1);
-    color: var(--primary-medium);
-    font-family: monospace;
-    flex-shrink: 0;
-  }
+    // Toggle switch + delete button alignment
+    .d-toggle-switch {
+      flex-shrink: 0;
+    }
 
-  .tvm-preset-badge {
-    font-size: var(--font-down-2);
-    background: var(--tertiary-low);
-    color: var(--tertiary);
-    padding: 0.1em 0.5em;
-    border-radius: 3px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    flex-shrink: 0;
-  }
-
-  .tvm-mode-card-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    padding: 0 0.75em;
-    flex-shrink: 0;
-  }
-
-  .tvm-delete-btn {
-    color: var(--danger);
+    .btn-danger {
+      flex-shrink: 0;
+    }
   }
 
   // Expanded card body with fields
-  .tvm-mode-card-body {
+  .tvm-mode-fields {
     padding: 1.25em;
     display: flex;
     flex-direction: column;
     gap: 1.25em;
-  }
-
-  .tvm-field-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35em;
 
     label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35em;
       font-weight: 600;
       color: var(--primary);
       font-size: var(--font-down-1);
@@ -274,22 +230,8 @@ body.tvm-mode {
         cursor: not-allowed;
       }
     }
-  }
 
-  .tvm-field-hint {
-    font-size: var(--font-down-1);
-    color: var(--primary-medium);
-    margin: 0;
-  }
-
-  .tvm-field-readonly-note {
-    font-size: var(--font-down-1);
-    color: var(--primary-medium);
-    font-weight: 400;
-  }
-
-  .tvm-css-field {
-    .tvm-css-editor {
+    textarea {
       width: 100%;
       min-height: 160px;
       font-family: monospace;
@@ -309,5 +251,17 @@ body.tvm-mode {
         box-shadow: 0 0 0 2px var(--tertiary-low);
       }
     }
+
+    .btn-primary {
+      align-self: flex-start;
+    }
+  }
+
+  // Bottom actions bar (Add Mode button)
+  .tvm-actions {
+    margin-top: 1em;
+    display: flex;
+    gap: 0.75em;
+    align-items: center;
   }
 }
