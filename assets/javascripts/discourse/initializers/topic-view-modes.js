@@ -11,9 +11,9 @@ function parseModes(rawSetting) {
   }
 }
 
-function clearTcvClasses() {
+function clearTvmClasses() {
   const toRemove = [...document.body.classList].filter((c) =>
-    c.startsWith("tcv-")
+    c.startsWith("tvm-")
   );
   if (toRemove.length) {
     document.body.classList.remove(...toRemove);
@@ -21,34 +21,34 @@ function clearTcvClasses() {
 }
 
 function applyModeCss(modeValue, modes) {
-  document.getElementById("tcv-mode-custom-css")?.remove();
+  document.getElementById("tvm-mode-custom-css")?.remove();
   if (!modeValue || !modes?.length) return;
   const mode = modes.find((m) => m.value === modeValue);
   if (!mode?.css?.trim()) return;
   const style = document.createElement("style");
-  style.id = "tcv-mode-custom-css";
+  style.id = "tvm-mode-custom-css";
   style.textContent = mode.css;
   document.head.appendChild(style);
 }
 
 export default {
-  name: "topic-content-view",
+  name: "topic-view-modes",
 
   initialize(container) {
     const siteSettings = container.lookup("service:site-settings");
 
     withPluginApi("1.3.0", (api) => {
       api.onPageChange(() => {
-        clearTcvClasses();
-        if (!siteSettings.topic_content_view_enabled) return;
+        clearTvmClasses();
+        if (!siteSettings.topic_view_modes_enabled) return;
 
         const modeParam = new URLSearchParams(window.location.search).get(
-          "tcv"
+          "tvm"
         );
         if (!modeParam) return;
 
         const enabledModes = parseModes(
-          siteSettings.topic_content_view_modes
+          siteSettings.topic_view_modes_modes
         );
         const match = enabledModes.find((m) => m.value === modeParam);
         if (match?.classes) {
