@@ -13,14 +13,14 @@ import dIcon from "discourse/helpers/d-icon";
 const eq = (a, b) => a === b;
 
 function modeCardClass(mode, expandedValue) {
-  const classes = ["tcv-mode-card"];
+  const classes = ["tvm-mode-card"];
   if (mode.preset) { classes.push("is-preset"); }
   if (!mode.enabled) { classes.push("is-disabled"); }
   if (mode.value === expandedValue) { classes.push("is-expanded"); }
   return classes.join(" ");
 }
 
-export default class AdminPluginDiscourseTopicContentView extends Component {
+export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
 
   @tracked modes = [];
@@ -34,17 +34,17 @@ export default class AdminPluginDiscourseTopicContentView extends Component {
   }
 
   get pluginEnabled() {
-    return this.siteSettings.topic_content_view_enabled;
+    return this.siteSettings.topic_view_modes_enabled;
   }
 
   async loadModes() {
     this.loading = true;
     try {
-      const result = await ajax("/admin/plugins/discourse-topic-content-view");
+      const result = await ajax("/admin/plugins/discourse-topic-view-modes");
       this.modes = result.modes || [];
     } catch (e) {
       try {
-        this.modes = JSON.parse(this.siteSettings.topic_content_view_modes || "[]");
+        this.modes = JSON.parse(this.siteSettings.topic_view_modes || "[]");
       } catch (_) {
         this.modes = [];
       }
@@ -57,11 +57,11 @@ export default class AdminPluginDiscourseTopicContentView extends Component {
   togglePlugin() {
     const newValue = !this.pluginEnabled;
     this.saving = true;
-    ajax("/admin/site_settings/topic_content_view_enabled", {
+    ajax("/admin/site_settings/topic_view_modes_enabled", {
       type: "PUT",
       data: { value: newValue },
     })
-      .then(() => { this.siteSettings.topic_content_view_enabled = newValue; })
+      .then(() => { this.siteSettings.topic_view_modes_enabled = newValue; })
       .catch(popupAjaxError)
       .finally(() => { this.saving = false; });
   }
@@ -107,7 +107,7 @@ export default class AdminPluginDiscourseTopicContentView extends Component {
   async saveAll() {
     this.saving = true;
     try {
-      await ajax("/admin/plugins/discourse-topic-content-view", {
+      await ajax("/admin/plugins/discourse-topic-view-modes", {
         type: "PUT",
         contentType: "application/json",
         data: JSON.stringify({ modes: this.modes }),
@@ -120,9 +120,9 @@ export default class AdminPluginDiscourseTopicContentView extends Component {
   }
 
   <template>
-    <div class="topic-content-view-admin">
+    <div class="topic-view-modes-admin">
       <div class="admin-plugin-controls">
-        <span class="admin-plugin-label">{{i18n "topic_content_view.admin.plugin_enabled"}}</span>
+        <span class="admin-plugin-label">{{i18n "topic_view_modes.admin.plugin_enabled"}}</span>
         <DToggleSwitch
           @state={{this.pluginEnabled}}
           @disabled={{this.saving}}
@@ -133,14 +133,14 @@ export default class AdminPluginDiscourseTopicContentView extends Component {
       {{#if this.loading}}
         <div class="loading-spinner small"></div>
       {{else}}
-        <div class="tcv-modes-list">
+        <div class="tvm-modes-list">
           {{#each this.modes as |mode|}}
             <div class={{modeCardClass mode this.expandedMode}}>
-              <div class="tcv-mode-header" role="button" {{on "click" (fn this.toggleExpand mode)}}>
-                <span class="tcv-mode-label">{{if mode.label mode.label mode.value}}</span>
-                <span class="tcv-mode-value tcv-tag">{{mode.value}}</span>
+              <div class="tvm-mode-header" role="button" {{on "click" (fn this.toggleExpand mode)}}>
+                <span class="tvm-mode-label">{{if mode.label mode.label mode.value}}</span>
+                <span class="tvm-mode-value tvm-tag">{{mode.value}}</span>
                 {{#if mode.preset}}
-                  <span class="tcv-badge">{{i18n "topic_content_view.admin.preset"}}</span>
+                  <span class="tvm-badge">{{i18n "topic_view_modes.admin.preset"}}</span>
                 {{/if}}
                 <DToggleSwitch
                   @state={{mode.enabled}}
@@ -154,33 +154,33 @@ export default class AdminPluginDiscourseTopicContentView extends Component {
                 {{/unless}}
               </div>
               {{#if (eq mode.value this.expandedMode)}}
-                <div class="tcv-mode-fields">
-                  <label>{{i18n "topic_content_view.admin.field_value"}}
+                <div class="tvm-mode-fields">
+                  <label>{{i18n "topic_view_modes.admin.field_value"}}
                     <input type="text" value={{mode.value}} disabled={{mode.preset}}
                       {{on "input" (fn this.updateField mode "value")}} />
                   </label>
-                  <label>{{i18n "topic_content_view.admin.field_label"}}
+                  <label>{{i18n "topic_view_modes.admin.field_label"}}
                     <input type="text" value={{mode.label}}
                       {{on "input" (fn this.updateField mode "label")}} />
                   </label>
-                  <label>{{i18n "topic_content_view.admin.field_classes"}}
+                  <label>{{i18n "topic_view_modes.admin.field_classes"}}
                     <input type="text" value={{mode.classes}}
                       {{on "input" (fn this.updateField mode "classes")}} />
                   </label>
-                  <label>{{i18n "topic_content_view.admin.field_css"}}
+                  <label>{{i18n "topic_view_modes.admin.field_css"}}
                     <textarea {{on "input" (fn this.updateCss mode)}}>{{mode.css}}</textarea>
                   </label>
                   <button class="btn btn-primary" {{on "click" this.saveAll}} disabled={{this.saving}}>
-                    {{dIcon "floppy-disk"}} {{i18n "topic_content_view.admin.save_all"}}
+                    {{dIcon "floppy-disk"}} {{i18n "topic_view_modes.admin.save_all"}}
                   </button>
                 </div>
               {{/if}}
             </div>
           {{/each}}
         </div>
-        <div class="tcv-actions">
+        <div class="tvm-actions">
           <button class="btn btn-default" {{on "click" this.addMode}} disabled={{this.saving}}>
-            {{dIcon "plus"}} {{i18n "topic_content_view.admin.add_mode"}}
+            {{dIcon "plus"}} {{i18n "topic_view_modes.admin.add_mode"}}
           </button>
         </div>
       {{/if}}
