@@ -44,7 +44,7 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
       this.modes = result.modes || [];
     } catch (e) {
       try {
-        this.modes = JSON.parse(this.siteSettings.topic_view_modes || "[]");
+        this.modes = JSON.parse(this.siteSettings.topic_view_modes_modes || "[]");
       } catch (_) {
         this.modes = [];
       }
