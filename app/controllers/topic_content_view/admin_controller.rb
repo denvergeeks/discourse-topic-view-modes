@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module TopicContentView
+module TopicViewModes
   class AdminController < ::Admin::AdminController
     def index
-      modes = JSON.parse(SiteSetting.topic_content_view_modes || "[]")
+      modes = JSON.parse(SiteSetting.topic_view_modes || "[]")
       render json: { modes: modes }
     rescue JSON::ParserError
       render json: { modes: [] }
@@ -26,7 +26,7 @@ module TopicContentView
         }
       end
 
-      SiteSetting.topic_content_view_modes = sanitized.to_json
+      SiteSetting.topic_view_modes = sanitized.to_json
       render json: success_json
     rescue JSON::ParserError
       render json: failed_json, status: 422
