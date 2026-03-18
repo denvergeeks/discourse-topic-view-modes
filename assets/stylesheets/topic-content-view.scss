@@ -70,6 +70,23 @@ body.tcv-mode {
 }
 
 // ============================================================
+// TCV MINIMAL - tcv-minimal - ?tcv=min
+// ============================================================
+
+.tcv-minimal {
+  .above-main-container-outlet,
+  #topic-title,
+  .topic-avatar,
+  #topic-footer-buttons,
+  .more-topics__container,
+  .powered-by-discourse
+      display: none;
+}
+
+
+
+
+// ============================================================
 // Admin UI — mode card editor styles
 // ============================================================
 .tcv-admin {
