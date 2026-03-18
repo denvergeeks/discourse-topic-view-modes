@@ -1,11 +1,11 @@
 // ============================================================
-// Topic Content View — base structural styles
-// Applied when any ?tcv=MODE is active (body gets tcv-mode class)
+// Topic View Modes — base structural styles
+// Applied when any ?tvm=MODE is active (body gets tvm-mode class)
 // Per-mode custom CSS is injected at runtime via the admin CSS editor.
-// Admin > Plugins > Topic Content View
+// Admin > Plugins > Topic View Modes
 // ============================================================
 
-body.tcv-mode {
+body.tvm-mode {
   // Hide header
   #global-notice,
   .d-header,
@@ -70,10 +70,10 @@ body.tcv-mode {
 }
 
 // ============================================================
-// TCV MINIMAL - tcv-minimal - ?tcv=min
+// TVM MINIMAL - tvm-minimal - ?tvm=min
 // ============================================================
 
-.tcv-minimal {
+.tvm-minimal {
   .above-main-container-outlet,
   #topic-title,
   .topic-avatar,
@@ -90,7 +90,7 @@ body.tcv-mode {
 // ============================================================
 // Admin UI — mode card editor styles
 // ============================================================
-.tcv-admin {
+.tvm-admin {
   max-width: 860px;
   padding: 1.5em 0;
 
@@ -99,12 +99,12 @@ body.tcv-mode {
     margin-bottom: 0.25em;
   }
 
-  .tcv-admin-description {
+  .tvm-admin-description {
     color: var(--primary-medium);
     margin-bottom: 2em;
   }
 
-  .tcv-admin-header {
+  .tvm-admin-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -113,32 +113,32 @@ body.tcv-mode {
     flex-wrap: wrap;
   }
 
-  .tcv-admin-header-text {
+  .tvm-admin-header-text {
     flex: 1;
   }
 
-  .tcv-admin-header-actions {
+  .tvm-admin-header-actions {
     display: flex;
     align-items: center;
     gap: 0.75em;
     flex-shrink: 0;
   }
 
-  .tcv-saved-indicator {
+  .tvm-saved-indicator {
     color: var(--success);
     font-size: var(--font-down-1);
     font-weight: 600;
   }
 
   // Mode list
-  .tcv-mode-list {
+  .tvm-mode-list {
     display: flex;
     flex-direction: column;
     gap: 0.75em;
   }
 
   // Individual mode card
-  .tcv-mode-card {
+  .tvm-mode-card {
     border: 1px solid var(--primary-low);
     border-radius: 6px;
     overflow: hidden;
@@ -157,7 +157,7 @@ body.tcv-mode {
     }
   }
 
-  .tcv-mode-card-header {
+  .tvm-mode-card-header {
     display: flex;
     align-items: center;
     background: var(--primary-very-low);
@@ -168,7 +168,7 @@ body.tcv-mode {
     }
   }
 
-  .tcv-mode-card-toggle-area {
+  .tvm-mode-card-toggle-area {
     display: flex;
     align-items: center;
     gap: 0.5em;
@@ -186,30 +186,30 @@ body.tcv-mode {
     }
   }
 
-  .tcv-mode-card-arrow {
+  .tvm-mode-card-arrow {
     font-size: 0.75em;
     color: var(--primary-medium);
     flex-shrink: 0;
   }
 
-  .tcv-mode-card-title {
+  .tvm-mode-card-title {
     font-weight: 600;
     flex: 1;
   }
 
-  .tcv-untitled {
+  .tvm-untitled {
     color: var(--primary-medium);
     font-weight: 400;
   }
 
-  .tcv-mode-card-slug {
+  .tvm-mode-card-slug {
     font-size: var(--font-down-1);
     color: var(--primary-medium);
     font-family: monospace;
     flex-shrink: 0;
   }
 
-  .tcv-preset-badge {
+  .tvm-preset-badge {
     font-size: var(--font-down-2);
     background: var(--tertiary-low);
     color: var(--tertiary);
@@ -221,7 +221,7 @@ body.tcv-mode {
     flex-shrink: 0;
   }
 
-  .tcv-mode-card-controls {
+  .tvm-mode-card-controls {
     display: flex;
     align-items: center;
     gap: 0.5em;
@@ -229,19 +229,19 @@ body.tcv-mode {
     flex-shrink: 0;
   }
 
-  .tcv-delete-btn {
+  .tvm-delete-btn {
     color: var(--danger);
   }
 
   // Expanded card body with fields
-  .tcv-mode-card-body {
+  .tvm-mode-card-body {
     padding: 1.25em;
     display: flex;
     flex-direction: column;
     gap: 1.25em;
   }
 
-  .tcv-field-row {
+  .tvm-field-row {
     display: flex;
     flex-direction: column;
     gap: 0.35em;
@@ -276,20 +276,20 @@ body.tcv-mode {
     }
   }
 
-  .tcv-field-hint {
+  .tvm-field-hint {
     font-size: var(--font-down-1);
     color: var(--primary-medium);
     margin: 0;
   }
 
-  .tcv-field-readonly-note {
+  .tvm-field-readonly-note {
     font-size: var(--font-down-1);
     color: var(--primary-medium);
     font-weight: 400;
   }
 
-  .tcv-css-field {
-    .tcv-css-editor {
+  .tvm-css-field {
+    .tvm-css-editor {
       width: 100%;
       min-height: 160px;
       font-family: monospace;
