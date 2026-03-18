@@ -3,7 +3,7 @@
 module TopicViewModes
   class AdminController < ::Admin::AdminController
     def index
-      modes = JSON.parse(SiteSetting.topic_view_modes || "[]")
+      modes = JSON.parse(SiteSetting.topic_view_modes_modes || "[]")
       render json: { modes: modes }
     rescue JSON::ParserError
       render json: { modes: [] }
