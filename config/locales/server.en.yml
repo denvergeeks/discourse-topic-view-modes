@@ -1,4 +1,4 @@
 en:
   site_settings:
-    topic_content_view_enabled: "Topic Content View enabled"
-    topic_content_view_modes: "Topic Content View modes (JSON)"
+    topic_view_modes_enabled: "Topic Content View enabled"
+    topic_view_modes_modes: "Topic Content View modes (JSON)"
