@@ -79,8 +79,9 @@ body.tcv-mode {
   .topic-avatar,
   #topic-footer-buttons,
   .more-topics__container,
-  .powered-by-discourse
+  .powered-by-discourse {
       display: none;
+  }
 }
 
 
