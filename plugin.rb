@@ -20,9 +20,9 @@ after_initialize do
   require_relative "app/controllers/topic_view_modes/admin_controller"
 
   Discourse::Application.routes.prepend do
-    get "/admin/plugins/discourse-topic-view-modes" => "topic_view_modes/admin#index",
+    get "/admin/plugins/discourse-topic-view-modes/modes" => "topic_view_modes/admin#index",
         constraints: StaffConstraint.new
-    put "/admin/plugins/discourse-topic-view-modes" => "topic_view_modes/admin#update",
+    put "/admin/plugins/discourse-topic-view-modes/modes" => "topic_view_modes/admin#update",
         constraints: StaffConstraint.new
   end
 end
