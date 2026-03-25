@@ -12,6 +12,6 @@ plugins:
   # Managed via Admin > Plugins > Topic View Modes
   topic_view_modes_modes:
     default: |
-      [{"value":"content","label":"Content Only","classes":"tvm-mode","css":"","preset":true},{"value":"min","label":"Minimal","classes":"tvm-mode tvm-minimal","css":"","preset":true},{"value":"full","label":"Full","classes":"tvm-mode tvm-full","css":"","preset":true}]
+      [{"value":"min","label":"Minimal","classes":"tvm-mode tvm-minimal","css":"","preset":true},{"value":"content","label":"Content Only","classes":"tvm-mode","css":"","preset":true},{"value":"full","label":"Full","classes":"tvm-mode tvm-full","css":"","preset":true}]
     type: string
     client: true
