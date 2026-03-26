@@ -1,4 +1,4 @@
-import AdminPluginDiscourseTopicViewModes from "discourse/plugins/discourse-topic-view-modes/discourse/components/admin-plugin-discourse-topic-view-modes";
+import AdminPluginDiscourseTopicViewModes from "discourse/components/admin-plugin-discourse-topic-view-modes";
 
 <template>
   <AdminPluginDiscourseTopicViewModes />
