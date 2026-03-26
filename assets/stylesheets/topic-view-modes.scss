@@ -83,7 +83,45 @@ body.tvm-mode {
   .powered-by-discourse {
     display: none !important;
   }
+
+
+  
+  // Show ONLY div.cooked — hide everything else in the first post
+  .topic-post:first-child {
+
+    // Remove article padding/chrome entirely
+    article.boxed,
+    article.boxed .row {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    // Hide the avatar column
+    .topic-avatar {
+      display: none !important;
+    }
+
+    // Hide the entire post content wrapper except .cooked
+    .topic-body .cooked ~ *,
+    .topic-body > *:not(.cooked) {
+      display: none !important;
+    }
+
+    // Remove padding from the post body wrapper so .cooked is flush
+    .topic-body {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+  }
+
+
+  
+  
 }
+
+
+
 
 // ============================================================
 // Admin UI — mode card editor styles
