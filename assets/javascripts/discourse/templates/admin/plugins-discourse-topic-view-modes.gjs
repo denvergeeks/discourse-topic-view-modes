@@ -1,4 +1,3 @@
-import AdminPluginDiscourseTopicViewModes from "discourse/plugins/discourse-topic-view-modes/discourse/components/admin-plugin-discourse-topic-view-modes";
 import { i18n } from "discourse-i18n";
 
 export default <template>
