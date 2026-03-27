@@ -106,12 +106,10 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
 
         <div class="tvm-modes-list">
           {{#each this.modes as |mode|}}
-            <div
-              class="tvm-mode-card
-                {{if mode.preset 'is-preset'}}
-                {{unless mode.enabled 'is-disabled'}}
-                {{if (eq mode.value this.expandedMode) 'is-expanded'}}"
-            >
+            <div class="tvm-mode-card
+              {{if mode.preset 'is-preset'}}
+              {{unless mode.enabled 'is-disabled'}}
+              {{if (eq mode.value this.expandedMode) 'is-expanded'}}">
               <div
                 class="tvm-mode-header"
                 {{on "click" (fn this.toggleExpand mode)}}
@@ -129,35 +127,30 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
                   {{dIcon "trash-can"}}
                 </button>
               </div>
-
               {{#if (eq mode.value this.expandedMode)}}
                 <div class="tvm-mode-details">
-                  abel>
-                    Value
+                  abel>Value
                     <input
                       type="text"
                       value={{mode.value}}
                       {{on "input" (fn this.updateField mode "value")}}
                     />
                   </label>
-                  abel>
-                    Label
+                  abel>Label
                     <input
                       type="text"
                       value={{mode.label}}
                       {{on "input" (fn this.updateField mode "label")}}
                     />
                   </label>
-                  abel>
-                    CSS Classes
+                  abel>CSS Classes
                     <input
                       type="text"
                       value={{mode.classes}}
                       {{on "input" (fn this.updateField mode "classes")}}
                     />
                   </label>
-                  abel>
-                    Custom CSS
+                  abel>Custom CSS
                     <textarea
                       {{on "input" (fn this.updateCss mode)}}
                     >{{mode.css}}</textarea>
