@@ -3,6 +3,8 @@ import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
+import DToggleSwitch from "discourse/components/d-toggle-switch";
+import DIcon from "discourse/components/d-icon";
 
 export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
