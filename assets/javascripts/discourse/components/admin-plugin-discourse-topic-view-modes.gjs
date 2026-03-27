@@ -5,6 +5,7 @@ import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DIcon from "discourse/components/d-icon";
+import { eq } from "@ember/object/computed";
 
 export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
@@ -16,6 +17,7 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
 
   DToggleSwitch = DToggleSwitch;
   DIcon = DIcon;
+  eq = eq; // make `eq` available as this.eq
 
   get pluginEnabled() {
     return this.siteSettings.topic_view_modes_enabled;
@@ -141,7 +143,7 @@ export const template = <template>
               </button>
             </div>
 
-            {{#if (eq mode.value this.expandedMode)}}
+            {{#if (this.eq mode.value this.expandedMode)}}
               <div class="tvm-mode-details">
                 <label>
                   Value
