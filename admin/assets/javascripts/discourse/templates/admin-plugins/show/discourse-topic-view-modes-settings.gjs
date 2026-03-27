@@ -5,7 +5,7 @@ export default <template>
   <section class="tvm-admin-page">
     <h1>{{i18n "topic_view_modes.admin.title"}}</h1>
 
-    <p>DEBUG: new show-route template is rendering.</p>
+    <p>DEBUG: SETTINGS template is rendering.</p>
 
     <AdminPluginDiscourseTopicViewModes />
   </section>
