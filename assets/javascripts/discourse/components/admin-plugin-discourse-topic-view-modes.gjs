@@ -38,30 +38,19 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
 
   @action
   togglePlugin() {
-    this.siteSettings.set(
-      "topic_view_modes_enabled",
-      !this.pluginEnabled
-    );
+    this.siteSettings.set("topic_view_modes_enabled", !this.pluginEnabled);
   }
 
   @action
   toggleExpand(mode) {
-    this.expandedMode =
-      this.expandedMode === mode.value ? null : mode.value;
+    this.expandedMode = this.expandedMode === mode.value ? null : mode.value;
   }
 
   @action
   addMode() {
     this.modes = [
       ...this.modes,
-      {
-        value: "",
-        label: "",
-        classes: "",
-        css: "",
-        enabled: true,
-        preset: false,
-      },
+      { value: "", label: "", classes: "", css: "", enabled: true, preset: false },
     ];
     this.expandedMode = "";
   }
@@ -119,9 +108,9 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
           {{#each this.modes as |mode|}}
             <div
               class="tvm-mode-card
-                     {{if mode.preset "is-preset"}}
-                     {{unless mode.enabled "is-disabled"}}
-                     {{if (eq mode.value this.expandedMode) "is-expanded"}}"
+                {{if mode.preset 'is-preset'}}
+                {{unless mode.enabled 'is-disabled'}}
+                {{if (eq mode.value this.expandedMode) 'is-expanded'}}"
             >
               <div
                 class="tvm-mode-header"
@@ -129,12 +118,10 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
               >
                 <span class="tvm-mode-value">{{mode.value}}</span>
                 <span class="tvm-mode-label">{{mode.label}}</span>
-
                 <DToggleSwitch
                   @state={{mode.enabled}}
                   @onClick={{fn this.toggleModeEnabled mode}}
                 />
-
                 <button
                   type="button"
                   {{on "click" (fn this.removeMode mode)}}
@@ -151,27 +138,24 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
                       type="text"
                       value={{mode.value}}
                       {{on "input" (fn this.updateField mode "value")}}
-                    >
+                    />
                   </label>
-
                   abel>
                     Label
                     <input
                       type="text"
                       value={{mode.label}}
                       {{on "input" (fn this.updateField mode "label")}}
-                    >
+                    />
                   </label>
-
                   abel>
                     CSS Classes
                     <input
                       type="text"
                       value={{mode.classes}}
                       {{on "input" (fn this.updateField mode "classes")}}
-                    >
+                    />
                   </label>
-
                   abel>
                     Custom CSS
                     <textarea
@@ -185,10 +169,7 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
         </div>
 
         <div class="tvm-actions">
-          <button
-            type="button"
-            {{on "click" this.addMode}}
-          >
+          <button type="button" {{on "click" this.addMode}}>
             Add Mode
           </button>
           <button
