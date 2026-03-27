@@ -1,16 +1,17 @@
 import { apiInitializer } from "discourse/lib/api";
 
 export default apiInitializer("0.8.57", (api) => {
-  api.addAdminPluginConfigurationNav("discourse-topic-view-modes", () => {
-    return {
-      links: [
-        {
-          name: "modes",
-          label: "topic_view_modes.admin.modes_tab_label",
-          route: "adminPlugins.show.discourse-topic-view-modes",
-          description: "topic_view_modes.admin.modes_tab_description",
-        },
-      ],
-    };
-  });
+  // Temporarily disabled to stop admin-plugin-nav-manager errors
+  // api.addAdminPluginConfigurationNav("discourse-topic-view-modes", () => {
+  //   return {
+  //     links: [
+  //       {
+  //         name: "modes",
+  //         label: "topic_view_modes.admin.modes_tab_label",
+  //         route: "adminPlugins.show.discourse-topic-view-modes",
+  //         description: "topic_view_modes.admin.modes_tab_description",
+  //       },
+  //     ],
+  //   };
+  // });
 });
