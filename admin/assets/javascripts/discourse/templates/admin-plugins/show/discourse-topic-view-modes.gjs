@@ -7,4 +7,4 @@ export default <template>
 
     <AdminPluginDiscourseTopicViewModes />
   </section>
-</template>
+</template>;
