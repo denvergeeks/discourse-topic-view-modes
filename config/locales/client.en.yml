@@ -5,7 +5,7 @@ en:
         modes_tab_label: "Modes"
         title: "Topic View Modes"
         plugin_enabled: "Plugin Enabled"
-        description: "Manage view modes for the ?tvm=MODE URL parameter. Each mode applies body classes and optional CSS. Toggle on/off without deleting."
+        description: "Manage Topic View Modes for the ?tvm=MODE URL parameter. Each mode applies body classes and optional CSS. Toggle on/off without deleting."
         add_mode: "Add View Mode"
         save_all: "Save All"
         preset: "preset"
