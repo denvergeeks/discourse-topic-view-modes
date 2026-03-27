@@ -10,7 +10,9 @@ enabled_site_setting :topic_view_modes_enabled
 register_asset "stylesheets/topic-view-modes.scss", :desktop
 
 add_admin_route "topic_view_modes.admin.title",
-                "discourse-topic-view-modes"
+                "discourse-topic-view-modes",
+                type: :plugin,
+                use_new_show_route: true
 
 after_initialize do
   module ::TopicViewModes
