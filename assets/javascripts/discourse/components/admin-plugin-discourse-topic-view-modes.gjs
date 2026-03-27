@@ -129,28 +129,28 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
               </div>
               {{#if (eq mode.value this.expandedMode)}}
                 <div class="tvm-mode-details">
-                  abel>Value
+                  <label>Value
                     <input
                       type="text"
                       value={{mode.value}}
                       {{on "input" (fn this.updateField mode "value")}}
                     />
                   </label>
-                  abel>Label
+                  <label>Label
                     <input
                       type="text"
                       value={{mode.label}}
                       {{on "input" (fn this.updateField mode "label")}}
                     />
                   </label>
-                  abel>CSS Classes
+                  <label>CSS Classes
                     <input
                       type="text"
                       value={{mode.classes}}
                       {{on "input" (fn this.updateField mode "classes")}}
                     />
                   </label>
-                  abel>Custom CSS
+                  <label>Custom CSS
                     <textarea
                       {{on "input" (fn this.updateCss mode)}}
                     >{{mode.css}}</textarea>
