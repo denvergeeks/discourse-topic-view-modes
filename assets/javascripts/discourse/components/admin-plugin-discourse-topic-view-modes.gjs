@@ -4,7 +4,6 @@ import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
-import DIcon from "discourse/components/d-icon";
 import { eq } from "@ember/object/computed";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
@@ -18,7 +17,6 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
   @tracked expandedMode = null;
 
   DToggleSwitch = DToggleSwitch;
-  DIcon = DIcon;
   eq = eq;
   on = on;
   fn = fn;
@@ -146,7 +144,7 @@ export const template = <template>
                 type="button"
                 {{this.on "click" (this.fn this.removeMode mode)}}
               >
-                <this.DIcon @icon="trash-can" />
+                {{d-icon "trash-can"}}
               </button>
             </div>
 
