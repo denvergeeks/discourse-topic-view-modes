@@ -8,10 +8,14 @@ import DIcon from "discourse/components/d-icon";
 
 export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
+
   @tracked loading = true;
   @tracked saving = false;
   @tracked modes = [];
   @tracked expandedMode = null;
+
+  DToggleSwitch = DToggleSwitch;
+  DIcon = DIcon;
 
   get pluginEnabled() {
     return this.siteSettings.topic_view_modes_enabled;
@@ -33,8 +37,11 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
   }
 
   @action
-  async togglePlugin() {
-    this.siteSettings.set("topic_view_modes_enabled", !this.pluginEnabled);
+  togglePlugin() {
+    this.siteSettings.set(
+      "topic_view_modes_enabled",
+      !this.pluginEnabled
+    );
   }
 
   @action
@@ -78,7 +85,7 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
   }
 
   @action
-  async toggleModeEnabled(mode) {
+  toggleModeEnabled(mode) {
     mode.enabled = !mode.enabled;
   }
 
@@ -86,21 +93,14 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
   async saveAll() {
     this.saving = true;
     try {
-      await ajax(
-        "/admin/plugins/discourse-topic-view-modes/modes",
-        {
-          type: "PUT",
-          data: { modes: this.modes },
-        }
-      );
+      await ajax("/admin/plugins/discourse-topic-view-modes/modes", {
+        type: "PUT",
+        data: { modes: this.modes },
+      });
     } finally {
       this.saving = false;
     }
   }
-
-  // expose imported components to the strict-mode template
-  DToggleSwitch = DToggleSwitch;
-  DIcon = DIcon;
 }
 
 export const template = <template>
@@ -112,7 +112,7 @@ export const template = <template>
         <this.DToggleSwitch
           @state={{this.pluginEnabled}}
           @label="topic_view_modes.admin.plugin_enabled"
-          @onClick={{action "togglePlugin"}}
+          @onClick={{this.togglePlugin}}
         />
       </div>
 
@@ -126,17 +126,17 @@ export const template = <template>
           >
             <div
               class="tvm-mode-header"
-              {{action "toggleExpand" mode on="click"}}
+              {{on "click" (fn this.toggleExpand mode)}}
             >
               <span class="tvm-mode-value">{{mode.value}}</span>
               <span class="tvm-mode-label">{{mode.label}}</span>
 
               <this.DToggleSwitch
                 @state={{mode.enabled}}
-                @onClick={{action "toggleModeEnabled" mode}}
+                @onClick={{fn this.toggleModeEnabled mode}}
               />
 
-              <button {{action "removeMode" mode}}>
+              <button type="button" {{on "click" (fn this.removeMode mode)}}>
                 <this.DIcon @icon="trash-can" />
               </button>
             </div>
@@ -148,7 +148,7 @@ export const template = <template>
                   <input
                     type="text"
                     value={{mode.value}}
-                    oninput={{action "updateField" mode "value"}}
+                    {{on "input" (fn this.updateField mode "value")}}
                   >
                 </label>
 
@@ -157,7 +157,7 @@ export const template = <template>
                   <input
                     type="text"
                     value={{mode.label}}
-                    oninput={{action "updateField" mode "label"}}
+                    {{on "input" (fn this.updateField mode "label")}}
                   >
                 </label>
 
@@ -166,14 +166,14 @@ export const template = <template>
                   <input
                     type="text"
                     value={{mode.classes}}
-                    oninput={{action "updateField" mode "classes"}}
+                    {{on "input" (fn this.updateField mode "classes")}}
                   >
                 </label>
 
                 <label>
                   Custom CSS
                   <textarea
-                    oninput={{action "updateCss" mode}}
+                    {{on "input" (fn this.updateCss mode)}}
                   >{{mode.css}}</textarea>
                 </label>
               </div>
@@ -183,9 +183,12 @@ export const template = <template>
       </div>
 
       <div class="tvm-actions">
-        <button {{action "addMode"}}>Add Mode</button>
+        <button type="button" {{on "click" this.addMode}}>
+          Add Mode
+        </button>
         <button
-          {{action "saveAll"}}
+          type="button"
+          {{on "click" this.saveAll}}
           disabled={{this.saving}}
         >
           {{if this.saving "Saving…" "Save All"}}
