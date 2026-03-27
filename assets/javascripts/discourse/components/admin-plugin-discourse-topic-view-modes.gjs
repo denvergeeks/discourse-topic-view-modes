@@ -6,6 +6,8 @@ import { inject as service } from "@ember/service";
 import DToggleSwitch from "discourse/components/d-toggle-switch";
 import DIcon from "discourse/components/d-icon";
 import { eq } from "@ember/object/computed";
+import { on } from "@ember/modifier";
+import { fn } from "@ember/helper";
 
 export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
@@ -17,7 +19,9 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
 
   DToggleSwitch = DToggleSwitch;
   DIcon = DIcon;
-  eq = eq; // make `eq` available as this.eq
+  eq = eq;
+  on = on;
+  fn = fn;
 
   get pluginEnabled() {
     return this.siteSettings.topic_view_modes_enabled;
@@ -124,21 +128,24 @@ export const template = <template>
             class="tvm-mode-card
                    {{if mode.preset "is-preset"}}
                    {{unless mode.enabled "is-disabled"}}
-                   {{if (eq mode.value this.expandedMode) "is-expanded"}}"
+                   {{if (this.eq mode.value this.expandedMode) "is-expanded"}}"
           >
             <div
               class="tvm-mode-header"
-              {{on "click" (fn this.toggleExpand mode)}}
+              {{this.on "click" (this.fn this.toggleExpand mode)}}
             >
               <span class="tvm-mode-value">{{mode.value}}</span>
               <span class="tvm-mode-label">{{mode.label}}</span>
 
               <this.DToggleSwitch
                 @state={{mode.enabled}}
-                @onClick={{fn this.toggleModeEnabled mode}}
+                @onClick={{this.fn this.toggleModeEnabled mode}}
               />
 
-              <button type="button" {{on "click" (fn this.removeMode mode)}}>
+              <button
+                type="button"
+                {{this.on "click" (this.fn this.removeMode mode)}}
+              >
                 <this.DIcon @icon="trash-can" />
               </button>
             </div>
@@ -150,7 +157,7 @@ export const template = <template>
                   <input
                     type="text"
                     value={{mode.value}}
-                    {{on "input" (fn this.updateField mode "value")}}
+                    {{this.on "input" (this.fn this.updateField mode "value")}}
                   >
                 </label>
 
@@ -159,7 +166,7 @@ export const template = <template>
                   <input
                     type="text"
                     value={{mode.label}}
-                    {{on "input" (fn this.updateField mode "label")}}
+                    {{this.on "input" (this.fn this.updateField mode "label")}}
                   >
                 </label>
 
@@ -168,14 +175,14 @@ export const template = <template>
                   <input
                     type="text"
                     value={{mode.classes}}
-                    {{on "input" (fn this.updateField mode "classes")}}
+                    {{this.on "input" (this.fn this.updateField mode "classes")}}
                   >
                 </label>
 
                 <label>
                   Custom CSS
                   <textarea
-                    {{on "input" (fn this.updateCss mode)}}
+                    {{this.on "input" (this.fn this.updateCss mode)}}
                   >{{mode.css}}</textarea>
                 </label>
               </div>
@@ -185,12 +192,15 @@ export const template = <template>
       </div>
 
       <div class="tvm-actions">
-        <button type="button" {{on "click" this.addMode}}>
+        <button
+          type="button"
+          {{this.on "click" this.addMode}}
+        >
           Add Mode
         </button>
         <button
           type="button"
-          {{on "click" this.saveAll}}
+          {{this.on "click" this.saveAll}}
           disabled={{this.saving}}
         >
           {{if this.saving "Saving…" "Save All"}}
