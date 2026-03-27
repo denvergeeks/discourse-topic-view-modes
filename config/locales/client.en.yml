@@ -2,6 +2,7 @@ en:
   js:
     topic_view_modes:
       admin:
+        modes_tab_label: "Modes"
         title: "Topic View Modes"
         plugin_enabled: "Plugin Enabled"
         description: "Manage view modes for the ?tvm=MODE URL parameter. Each mode applies body classes and optional CSS. Toggle on/off without deleting."
