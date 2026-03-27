@@ -1,9 +1,9 @@
 export default {
-  resource: "admin.adminPlugins",
+  resource: "admin.adminPlugins.show",
   path: "/plugins",
   map() {
-    this.route("show", { path: "/:plugin_id" }, function () {
-      this.route("discourse-topic-view-modes", { path: "/settings" });
+    this.route("discourse-topic-view-modes", { path: "/discourse-topic-view-modes" }, function () {
+      this.route("settings");
     });
   },
 };
