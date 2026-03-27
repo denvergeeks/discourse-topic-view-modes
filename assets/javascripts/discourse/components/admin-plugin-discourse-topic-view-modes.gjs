@@ -8,7 +8,6 @@ import DIcon from "discourse/components/d-icon";
 
 export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
-
   @tracked loading = true;
   @tracked saving = false;
   @tracked modes = [];
@@ -98,6 +97,10 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
       this.saving = false;
     }
   }
+
+  // expose imported components to the strict-mode template
+  DToggleSwitch = DToggleSwitch;
+  DIcon = DIcon;
 }
 
 export const template = <template>
@@ -106,11 +109,11 @@ export const template = <template>
       <p>Loading modes…</p>
     {{else}}
       <div class="tvm-plugin-toggle">
-        {{d-toggle-switch
-          state=this.pluginEnabled
-          label="topic_view_modes.admin.plugin_enabled"
-          onClick=(action "togglePlugin")
-        }}
+        <this.DToggleSwitch
+          @state={{this.pluginEnabled}}
+          @label="topic_view_modes.admin.plugin_enabled"
+          @onClick={{action "togglePlugin"}}
+        />
       </div>
 
       <div class="tvm-modes-list">
@@ -128,13 +131,13 @@ export const template = <template>
               <span class="tvm-mode-value">{{mode.value}}</span>
               <span class="tvm-mode-label">{{mode.label}}</span>
 
-              {{d-toggle-switch
-                state=mode.enabled
-                onClick=(action "toggleModeEnabled" mode)
-              }}
+              <this.DToggleSwitch
+                @state={{mode.enabled}}
+                @onClick={{action "toggleModeEnabled" mode}}
+              />
 
               <button {{action "removeMode" mode}}>
-                {{d-icon "trash-can"}}
+                <this.DIcon @icon="trash-can" />
               </button>
             </div>
 
