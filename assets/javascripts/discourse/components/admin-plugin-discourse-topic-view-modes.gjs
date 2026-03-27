@@ -7,6 +7,8 @@ import DToggleSwitch from "discourse/components/d-toggle-switch";
 import { eq } from "@ember/object/computed";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
+import { helper } from "@ember/component/helper";
+import dIcon from "discourse-common/helpers/d-icon";
 
 export default class AdminPluginDiscourseTopicViewModes extends Component {
   @service siteSettings;
@@ -20,6 +22,7 @@ export default class AdminPluginDiscourseTopicViewModes extends Component {
   eq = eq;
   on = on;
   fn = fn;
+  dIcon = helper(dIcon);
 
   get pluginEnabled() {
     return this.siteSettings.topic_view_modes_enabled;
@@ -144,7 +147,7 @@ export const template = <template>
                 type="button"
                 {{this.on "click" (this.fn this.removeMode mode)}}
               >
-                {{d-icon "trash-can"}}
+                {{this.dIcon "trash-can"}}
               </button>
             </div>
 
