@@ -1,12 +1,15 @@
 // ============================================================
 // Topic View Modes — base structural styles
-// Applied when any ?tvm=MODE is active (body gets tvm-mode class)
+// Applied when any ?tvm=MODE is active (body gets tvm-mode class).
 // Per-mode custom CSS is injected at runtime via the admin CSS editor.
 // Admin > Plugins > Topic View Modes
+//
+// The mode controller must ensure post number 1 is loaded.
+// These styles only control visibility of rendered content.
 // ============================================================
 
 body.tvm-mode {
-  // Hide header
+  // Hide header and sidebar.
   #global-notice,
   .d-header,
   .header-cloak,
@@ -15,7 +18,7 @@ body.tvm-mode {
     display: none !important;
   }
 
-  // Hide all topic chrome — replies, nav, footer, sidebar, progress bar
+  // Hide topic chrome and every rendered post except the OP.
   .list-controls,
   .navigation-container,
   .nav-pills,
@@ -34,29 +37,25 @@ body.tvm-mode {
   .topic-map,
   .signup-cta,
   .footer-message,
-  footer.topic-footer-main,
-  // Hide all posts except the first (OP)
-  .topic-post:not(:first-child),
+  .topic-post:not([data-post-number="1"]),
   .small-action {
     display: none !important;
   }
 
-  // Remove header padding from main outlet
+  // Remove header spacing from the main outlet.
   #main-outlet {
     padding-top: 0 !important;
     margin-top: 0 !important;
   }
 
-  // Remove sidebar grid layout
+  // Remove the sidebar grid layout.
   #main-outlet-wrapper {
     display: block !important;
-    grid-template-columns: none !important;
     padding: 0 !important;
   }
 
-  // Clean up the first post appearance
-  .topic-post:first-child {
-    .post-menu-area,
+  // Clean up the original post.
+  .topic-post[data-post-number="1"] {
     .actions,
     .post-links-container,
     nav.post-controls {
@@ -71,10 +70,11 @@ body.tvm-mode {
 }
 
 // ============================================================
-// TVM MINIMAL - tvm-minimal - ?tvm=min
+// TVM MINIMAL — tvm-minimal — ?tvm=min
+// Requires both tvm-mode and tvm-minimal on body.
 // ============================================================
 
-.tvm-minimal {
+body.tvm-mode.tvm-minimal {
   .above-main-container-outlet,
   #topic-title,
   .topic-avatar,
@@ -83,24 +83,18 @@ body.tvm-mode {
   .powered-by-discourse {
     display: none !important;
   }
-
-
-  
 }
-
-
-
 
 // ============================================================
 // Admin UI — mode card editor styles
-// Matches class names in admin-plugin-discourse-topic-view-modes.gjs
+// Matches class names in admin-plugin-discourse-topic-view-modes.gjs.
 // ============================================================
 
 .topic-view-modes-admin {
   max-width: 860px;
   padding: 1.5em 0;
 
-  // Top bar: plugin enable toggle
+  // Top bar: plugin enable toggle.
   .admin-plugin-controls {
     display: flex;
     align-items: center;
@@ -114,14 +108,14 @@ body.tvm-mode {
     }
   }
 
-  // Mode list container
+  // Mode list container.
   .tvm-modes-list {
     display: flex;
     flex-direction: column;
     gap: 0.75em;
   }
 
-  // Individual mode card
+  // Individual mode card.
   .tvm-mode-card {
     border: 1px solid var(--primary-low);
     border-radius: 6px;
@@ -130,6 +124,10 @@ body.tvm-mode {
 
     &.is-expanded {
       border-color: var(--tertiary-low);
+
+      .tvm-mode-header {
+        border-bottom-color: var(--primary-low);
+      }
     }
 
     &.is-disabled {
@@ -141,7 +139,7 @@ body.tvm-mode {
     }
   }
 
-  // Card header row (clickable toggle area)
+  // Card header row: clickable toggle area.
   .tvm-mode-header {
     display: flex;
     align-items: center;
@@ -151,15 +149,11 @@ body.tvm-mode {
     padding: 0.75em 1em;
     gap: 0.5em;
 
-    .is-expanded & {
-      border-bottom-color: var(--primary-low);
-    }
-
     &:hover {
       background: var(--primary-low);
     }
 
-    // Mode label (human-readable name)
+    // Mode label: human-readable name.
     .tvm-mode-label {
       font-weight: 600;
       flex: 1;
@@ -167,7 +161,7 @@ body.tvm-mode {
       font-size: var(--font-0);
     }
 
-    // Mode value slug tag
+    // Mode value slug tag.
     .tvm-mode-value.tvm-tag {
       font-size: var(--font-down-1);
       color: var(--primary-medium);
@@ -175,7 +169,7 @@ body.tvm-mode {
       flex-shrink: 0;
     }
 
-    // Preset badge
+    // Preset badge.
     .tvm-badge {
       font-size: var(--font-down-2);
       background: var(--tertiary-low);
@@ -188,17 +182,14 @@ body.tvm-mode {
       flex-shrink: 0;
     }
 
-    // Toggle switch + delete button alignment
-    .d-toggle-switch {
-      flex-shrink: 0;
-    }
-
+    // Toggle switch and delete button alignment.
+    .d-toggle-switch,
     .btn-danger {
       flex-shrink: 0;
     }
   }
 
-  // Expanded card body with fields
+  // Expanded card body with fields.
   .tvm-mode-fields {
     padding: 1.25em;
     display: flex;
@@ -263,7 +254,7 @@ body.tvm-mode {
     }
   }
 
-  // Bottom actions bar (Add Mode button)
+  // Bottom actions bar: Add Mode button.
   .tvm-actions {
     margin-top: 1em;
     display: flex;
